@@ -12,7 +12,10 @@ import {
 import { UsersService } from './users.service';
 import { Response } from 'express';
 import { CreateUserDto } from './dto/create-user.dto';
-import { PrismaClientKnownRequestError } from '@prisma/client/runtime/library';
+import {
+  PrismaClientKnownRequestError,
+  PrismaClientUnknownRequestError,
+} from '@prisma/client/runtime/library';
 
 @Controller('users')
 export class UsersController {
@@ -79,14 +82,30 @@ export class UsersController {
 
   @Delete(':id')
   async remove(@Param('id') username: string, @Res() res: Response) {
-    const removedUser: any = await this.usersService.remove(username);
+    try {
+      const removedUser: any = await this.usersService.remove(username);
 
-    const { password, last_login, login_ip, is_locked, role, id, ...anyData } =
-      removedUser;
+      const {
+        password,
+        last_login,
+        login_ip,
+        is_locked,
+        role,
+        id,
+        ...anyData
+      } = removedUser;
 
-    return res.status(HttpStatus.OK).json({
-      message: `Successfully deleted user ${removedUser.username}`,
-      data: anyData,
-    });
+      return res.status(HttpStatus.OK).json({
+        message: `Successfully deleted user ${removedUser.username}`,
+        data: anyData,
+      });
+    } catch (e) {
+      if (e instanceof PrismaClientKnownRequestError) {
+        return res.status(HttpStatus.BAD_REQUEST).json({
+          message: 'User not found!',
+          data: null,
+        });
+      }
+    }
   }
 }
