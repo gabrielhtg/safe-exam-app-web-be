@@ -12,7 +12,7 @@ export class AuthService {
   ) {}
 
   async signIn(username: string, pass: string) {
-    const user = await this.usersService.findOne(username);
+    const user = await this.usersService.findOneForAuth(username);
     if (!(await this.securityService.isMatch(user.password, pass))) {
       return {
         message: 'Incorrect credentials',

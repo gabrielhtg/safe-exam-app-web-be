@@ -19,7 +19,7 @@ model User {
   created_at   DateTime  @default(now())
   email        String    @unique @db.VarChar(100)
   name         String?   @db.VarChar(100)
-  username     String    @db.VarChar(25)
+  username     String    @unique @db.VarChar(25)
   password     String
   updated_at   DateTime
   login_ip     String

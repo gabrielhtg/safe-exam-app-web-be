@@ -1,7 +1,8 @@
-import { Injectable } from '@nestjs/common';
+import { HttpStatus, Injectable } from '@nestjs/common';
 import { PrismaService } from '../prisma.service';
 import { CreateUserDto } from './dto/create-user.dto';
 import { SecurityService } from '../security/security.service';
+import { Response } from 'express';
 
 @Injectable()
 export class UsersService {
@@ -10,12 +11,43 @@ export class UsersService {
     private securityService: SecurityService,
   ) {}
 
-  async findOne(username: string) {
-    return this.prismaService.user.findUnique({
+  async findOne(username: string, res: Response) {
+    const user = await this.prismaService.user.findUnique({
       where: {
         username: username,
       },
     });
+
+    if (user) {
+      const {
+        password,
+        login_ip,
+        created_at,
+        updated_at,
+        is_locked,
+        id,
+        ...data
+      } = user;
+
+      return res.status(HttpStatus.OK).json({
+        message: 'Success',
+        data: data,
+      });
+    }
+
+    return res.status(HttpStatus.BAD_REQUEST).json({
+      message: 'User not found',
+    });
+  }
+
+  async findOneForAuth(username: string) {
+    const user = await this.prismaService.user.findUnique({
+      where: {
+        username: username,
+      },
+    });
+
+    return user;
   }
 
   async findAll() {

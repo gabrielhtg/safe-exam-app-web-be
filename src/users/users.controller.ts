@@ -4,6 +4,7 @@ import {
   Delete,
   Get,
   HttpStatus,
+  Logger,
   Param,
   Post,
   Res,
@@ -26,9 +27,9 @@ export class UsersController {
         data: users,
       });
     } else {
-      return res.status(200).json({
+      return res.status(404).json({
         message: 'No Data',
-        data: users,
+        data: null,
       });
     }
   }
@@ -37,47 +38,35 @@ export class UsersController {
   async create(@Res() res: Response, @Body() createuserDto: CreateUserDto) {
     const createdUser = await this.usersService.create(createuserDto);
 
+    const {
+      password,
+      login_ip,
+      created_at,
+      updated_at,
+      is_locked,
+      id,
+      ...data
+    } = createdUser;
+
     if (createdUser) {
       return res.status(200).json({
         message: 'User created successfully',
-        data: createdUser,
+        data: data,
       });
     }
   }
 
   @Get(':id')
-  async findOne(@Param('id') username: string, @Res() res: Response) {
-    const user = await this.usersService.findOne(username);
-
-    if (user) {
-      return res.status(HttpStatus.OK).json({
-        message: 'Success',
-        data: user,
-      });
-    } else {
-      return res.status(HttpStatus.BAD_REQUEST);
-    }
+  findOne(@Param('id') username: string, @Res() res: Response) {
+    return this.usersService.findOne(username, res);
   }
 
   @Delete(':id')
   async remove(@Param('id') username: string, @Res() res: Response) {
     const removedUser: any = await this.usersService.remove(username);
 
-    const {
-      // eslint-disable-next-line @typescript-eslint/no-unused-vars
-      password,
-      // eslint-disable-next-line @typescript-eslint/no-unused-vars
-      last_login,
-      // eslint-disable-next-line @typescript-eslint/no-unused-vars
-      login_ip,
-      // eslint-disable-next-line @typescript-eslint/no-unused-vars
-      is_locked,
-      // eslint-disable-next-line @typescript-eslint/no-unused-vars
-      role,
-      // eslint-disable-next-line @typescript-eslint/no-unused-vars
-      id,
-      ...anyData
-    } = removedUser;
+    const { password, last_login, login_ip, is_locked, role, id, ...anyData } =
+      removedUser;
 
     return res.status(HttpStatus.OK).json({
       message: `Successfully deleted user ${removedUser.username}`,
