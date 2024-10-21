@@ -17,13 +17,27 @@ export class UsersController {
   constructor(private readonly usersService: UsersService) {}
 
   @Get()
-  findAll(@Res() res: Response) {
-    return this.usersService.findAll(res);
+  async findAll(@Res() res: Response) {
+    const users = await this.usersService.findAll();
+
+    if (users.length > 0) {
+      return res.status(200).json({
+        message: 'ok',
+        data: users,
+      });
+    }
   }
 
   @Post()
-  create(@Res() res: Response, @Body() createuserDto: CreateUserDto) {
-    return this.usersService.create(createuserDto, res);
+  async create(@Res() res: Response, @Body() createuserDto: CreateUserDto) {
+    const createdUser = await this.usersService.create(createuserDto);
+
+    if (createdUser) {
+      return res.status(200).json({
+        message: 'User created successfully',
+        data: createdUser,
+      });
+    }
   }
 
   @Get(':id')
