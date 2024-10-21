@@ -31,7 +31,7 @@ export class AuthService {
 
     const payload = { sub: user.id, username: user.username };
 
-    return res.status(HttpStatus.UNAUTHORIZED).json({
+    return res.status(HttpStatus.OK).json({
       message: 'Login Success!',
       data: {
         access_token: await this.jwtService.signAsync(payload),
