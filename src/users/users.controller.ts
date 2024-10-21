@@ -25,6 +25,11 @@ export class UsersController {
         message: 'ok',
         data: users,
       });
+    } else {
+      return res.status(200).json({
+        message: 'No Data',
+        data: users,
+      });
     }
   }
 
