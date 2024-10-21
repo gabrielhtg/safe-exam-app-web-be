@@ -12,6 +12,7 @@ import {
 import { UsersService } from './users.service';
 import { Response } from 'express';
 import { CreateUserDto } from './dto/create-user.dto';
+import { PrismaClientKnownRequestError } from '@prisma/client/runtime/library';
 
 @Controller('users')
 export class UsersController {
@@ -36,24 +37,39 @@ export class UsersController {
 
   @Post()
   async create(@Res() res: Response, @Body() createuserDto: CreateUserDto) {
-    const createdUser = await this.usersService.create(createuserDto);
+    try {
+      const createdUser = await this.usersService.create(createuserDto);
 
-    const {
-      password,
-      login_ip,
-      created_at,
-      updated_at,
-      is_locked,
-      id,
-      ...data
-    } = createdUser;
+      const {
+        password,
+        login_ip,
+        created_at,
+        updated_at,
+        is_locked,
+        id,
+        ...data
+      } = createdUser;
 
-    if (createdUser) {
-      return res.status(200).json({
-        message: 'User created successfully',
-        data: data,
-      });
+      if (createdUser) {
+        return res.status(200).json({
+          message: 'User created successfully',
+          data: data,
+        });
+      }
+    } catch (err) {
+      if (err instanceof PrismaClientKnownRequestError) {
+        if (err.code === 'P2002') {
+          return res.status(HttpStatus.BAD_REQUEST).json({
+            message: `Unique constraint violation: ${createuserDto.username} already exists`,
+          });
+        }
+      }
     }
+
+    return res.status(HttpStatus.BAD_REQUEST).json({
+      message: 'Bad Request',
+      data: [],
+    });
   }
 
   @Get(':id')
