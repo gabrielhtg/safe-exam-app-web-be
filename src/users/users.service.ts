@@ -40,14 +40,12 @@ export class UsersService {
     });
   }
 
-  async findOneForAuth(username: string) {
-    const user = await this.prismaService.user.findUnique({
+  findOneForAuth(username: string) {
+    return this.prismaService.user.findUnique({
       where: {
         username: username,
       },
     });
-
-    return user;
   }
 
   async findAll() {

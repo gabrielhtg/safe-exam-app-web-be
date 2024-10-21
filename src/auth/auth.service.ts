@@ -14,6 +14,14 @@ export class AuthService {
 
   async signIn(username: string, pass: string, res: Response) {
     const user = await this.usersService.findOneForAuth(username);
+
+    if (!user) {
+      return res.status(HttpStatus.UNAUTHORIZED).json({
+        message: 'Incorrect credentials',
+        data: null,
+      });
+    }
+
     if (!(await this.securityService.isMatch(user.password, pass))) {
       return res.status(HttpStatus.UNAUTHORIZED).json({
         message: 'Incorrect credentials',
