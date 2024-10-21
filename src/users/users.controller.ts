@@ -12,10 +12,7 @@ import {
 import { UsersService } from './users.service';
 import { Response } from 'express';
 import { CreateUserDto } from './dto/create-user.dto';
-import {
-  PrismaClientKnownRequestError,
-  PrismaClientUnknownRequestError,
-} from '@prisma/client/runtime/library';
+import { PrismaClientKnownRequestError } from '@prisma/client/runtime/library';
 
 @Controller('users')
 export class UsersController {
