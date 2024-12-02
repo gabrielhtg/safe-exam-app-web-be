@@ -40,6 +40,44 @@ export class UsersService {
     });
   }
 
+  async findbyEmail(email: string) {
+    return this.prismaService.user.findUnique({
+      where:{email},
+    });
+  }
+
+  async updatePassword(userId: number, newPassword: string): Promise<void> {
+    console.log("Trying to update password...");
+  
+    try {
+      const user = await this.prismaService.user.findUnique({
+        where: { id: userId },
+      });
+  
+      if (!user) {
+        console.error('User not found:', userId);
+        throw new Error('User not found');
+      }
+  
+      console.log("Found user:", user.email);
+  
+      const hashedPassword = await this.securityService.hashPassword(newPassword);
+      console.log("Password hashed successfully");
+  
+      await this.prismaService.user.update({
+        where: { id: userId },
+        data: { password: hashedPassword },
+      });
+  
+      console.log("Password updated successfully for user:", user.email);
+    } catch (error) {
+      console.error("Error updating password for userId:", userId);
+      console.error("Error details:", error);
+      throw new Error('Error updating password');
+    }
+  }
+  
+
   findOneForAuth(username: string) {
     return this.prismaService.user.findUnique({
       where: {

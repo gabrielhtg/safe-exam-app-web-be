@@ -1,12 +1,5 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
-
-// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
-// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
-
 generator client {
   provider = "prisma-client-js"
-  output   = "../../node_modules/.prisma/client"
 }
 
 datasource db {
@@ -14,22 +7,22 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-model User {
+model user {
   id           Int       @id @default(autoincrement())
   created_at   DateTime  @default(now())
-  email        String    @unique @db.VarChar(100)
+  email        String    @unique(map: "User_email_key") @db.VarChar(100)
   name         String?   @db.VarChar(100)
-  username     String    @unique @db.VarChar(25)
+  username     String    @unique(map: "User_username_key") @db.VarChar(25)
   password     String
   updated_at   DateTime
   login_ip     String
-  role         Role      @default(USER)
+  role         user_role @default(USER)
   last_login   DateTime?
   is_locked    Boolean   @default(false)
   profile_pict String?
 }
 
-enum Role {
+enum user_role {
   USER
   ADMIN
 }

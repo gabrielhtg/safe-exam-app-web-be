@@ -13,6 +13,7 @@ import { UsersService } from './users.service';
 import { Response } from 'express';
 import { CreateUserDto } from './dto/create-user.dto';
 import { PrismaClientKnownRequestError } from '@prisma/client/runtime/library';
+import { register } from 'module';
 
 @Controller('users')
 export class UsersController {
@@ -35,7 +36,7 @@ export class UsersController {
     }
   }
 
-  @Post()
+  @Post('register')
   async create(@Res() res: Response, @Body() createuserDto: CreateUserDto) {
     try {
       const createdUser = await this.usersService.create(createuserDto);
@@ -75,6 +76,11 @@ export class UsersController {
   @Get(':id')
   findOne(@Param('id') username: string, @Res() res: Response) {
     return this.usersService.findOne(username, res);
+  }
+
+  @Get(':id')
+  findbyEmail(@Param('id') email: string, @Res() res: Response) {
+    return this.usersService.findOne(email, res);
   }
 
   @Delete(':id')
