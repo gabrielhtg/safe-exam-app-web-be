@@ -8,11 +8,10 @@ datasource db {
 }
 
 model user {
-  id           Int       @id @default(autoincrement())
   created_at   DateTime  @default(now())
   email        String    @unique(map: "User_email_key") @db.VarChar(100)
   name         String?   @db.VarChar(100)
-  username     String    @unique(map: "User_username_key") @db.VarChar(25)
+  username     String    @id @unique(map: "User_username_key") @db.VarChar(25)
   password     String
   updated_at   DateTime
   login_ip     String

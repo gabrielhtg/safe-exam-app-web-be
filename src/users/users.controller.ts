@@ -36,20 +36,13 @@ export class UsersController {
     }
   }
 
-  @Post('register')
+  @Post('')
   async create(@Res() res: Response, @Body() createuserDto: CreateUserDto) {
     try {
       const createdUser = await this.usersService.create(createuserDto);
 
-      const {
-        password,
-        login_ip,
-        created_at,
-        updated_at,
-        is_locked,
-        id,
-        ...data
-      } = createdUser;
+      const { password, login_ip, created_at, updated_at, is_locked, ...data } =
+        createdUser;
 
       if (createdUser) {
         return res.status(200).json({
@@ -73,13 +66,13 @@ export class UsersController {
     });
   }
 
-  @Get(':id')
-  findOne(@Param('id') username: string, @Res() res: Response) {
+  @Get(':username')
+  findOne(@Param('username') username: string, @Res() res: Response) {
     return this.usersService.findOne(username, res);
   }
 
-  @Get(':id')
-  findbyEmail(@Param('id') email: string, @Res() res: Response) {
+  @Get(':email')
+  findbyEmail(@Param('email') email: string, @Res() res: Response) {
     return this.usersService.findOne(email, res);
   }
 
