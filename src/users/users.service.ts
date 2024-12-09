@@ -19,8 +19,7 @@ export class UsersService {
     });
 
     if (user) {
-      const { password, login_ip, created_at, updated_at, is_locked, ...data } =
-        user;
+      const { password, login_ip, updated_at, is_locked, ...data } = user;
 
       return res.status(HttpStatus.OK).json({
         message: 'Success',
@@ -39,42 +38,56 @@ export class UsersService {
     });
   }
 
-  // async updatePassword(userId: number, newPassword: string): Promise<void> {
-  //   console.log("Trying to update password...");
-  //
-  //   try {
-  //     const user = await this.prismaService.user.findUnique({
-  //       where: { id: userId },
-  //     });
-  //
-  //     if (!user) {
-  //       console.error('User not found:', userId);
-  //       throw new Error('User not found');
-  //     }
-  //
-  //     console.log("Found user:", user.email);
-  //
-  //     const hashedPassword = await this.securityService.hashPassword(newPassword);
-  //     console.log("Password hashed successfully");
-  //
-  //     await this.prismaService.user.update({
-  //       where: { id: userId },
-  //       data: { password: hashedPassword },
-  //     });
-  //
-  //     console.log("Password updated successfully for user:", user.email);
-  //   } catch (error) {
-  //     console.error("Error updating password for userId:", userId);
-  //     console.error("Error details:", error);
-  //     throw new Error('Error updating password');
-  //   }
-  // }
-
   findOneForAuth(username: string) {
     return this.prismaService.user.findUnique({
       where: {
         username: username,
       },
+    });
+  }
+
+  async changePassword(reqBody: any, res: Response) {
+    const user = await this.prismaService.user.findUnique({
+      where: {
+        username: reqBody.username,
+      },
+    });
+
+    if (!user) {
+      return res.status(HttpStatus.BAD_REQUEST).json({
+        message: 'User not found',
+        data: null,
+      });
+    }
+
+    if (reqBody.new_password !== reqBody.re_new_password) {
+      return res.status(HttpStatus.BAD_REQUEST).json({
+        message: 'New password not same!',
+        data: null,
+      });
+    }
+
+    if (
+      !(await this.securityService.isMatch(user.password, reqBody.old_password))
+    ) {
+      return res.status(HttpStatus.UNAUTHORIZED).json({
+        message: 'Incorrect credentials',
+        data: null,
+      });
+    }
+
+    const updateData = await this.prismaService.user.update({
+      where: {
+        username: reqBody.username,
+      },
+      data: {
+        password: await this.securityService.hashPassword(reqBody.new_password),
+      },
+    });
+
+    return res.status(HttpStatus.OK).json({
+      message: 'Password Changed!',
+      data: updateData,
     });
   }
 
@@ -102,6 +115,20 @@ export class UsersService {
     return this.prismaService.user.delete({
       where: {
         username: username,
+      },
+    });
+  }
+
+  async update(requestBody: any, file: Express.Multer.File) {
+    return this.prismaService.user.update({
+      where: {
+        username: requestBody.old_username,
+      },
+      data: {
+        name: requestBody.name,
+        username: requestBody.username,
+        email: requestBody.email,
+        profile_pict: `/profile_pict/${file.filename}`,
       },
     });
   }

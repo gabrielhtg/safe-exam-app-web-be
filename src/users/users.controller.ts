@@ -4,16 +4,20 @@ import {
   Delete,
   Get,
   HttpStatus,
-  Logger,
   Param,
+  Patch,
   Post,
+  Put,
   Res,
+  UploadedFile,
+  UseInterceptors,
 } from '@nestjs/common';
 import { UsersService } from './users.service';
 import { Response } from 'express';
 import { CreateUserDto } from './dto/create-user.dto';
 import { PrismaClientKnownRequestError } from '@prisma/client/runtime/library';
-import { register } from 'module';
+import { FileInterceptor } from '@nestjs/platform-express';
+import { uploadProfilePict } from '../multer.config';
 
 @Controller('users')
 export class UsersController {
@@ -71,9 +75,24 @@ export class UsersController {
     return this.usersService.findOne(username, res);
   }
 
-  @Get(':email')
-  findbyEmail(@Param('email') email: string, @Res() res: Response) {
-    return this.usersService.findOne(email, res);
+  @Put()
+  @UseInterceptors(FileInterceptor('profile_pict', uploadProfilePict))
+  async update(
+    @UploadedFile() file: Express.Multer.File,
+    @Body() requestBody: any,
+    @Res() res: Response,
+  ) {
+    const updateResult = await this.usersService.update(requestBody, file);
+
+    return res.status(200).json({
+      message: `User ${updateResult.username} updated successfully`,
+      data: updateResult,
+    });
+  }
+
+  @Patch('password')
+  async changePassword(@Body() reqBody: any, @Res() res: Response) {
+    return await this.usersService.changePassword(reqBody, res);
   }
 
   @Delete(':id')
