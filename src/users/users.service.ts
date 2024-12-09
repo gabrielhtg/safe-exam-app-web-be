@@ -128,7 +128,7 @@ export class UsersService {
         name: requestBody.name,
         username: requestBody.username,
         email: requestBody.email,
-        profile_pict: `/profile_pict/${file.filename}`,
+        profile_pict: `profile_pict/${file.filename}`,
       },
     });
   }
