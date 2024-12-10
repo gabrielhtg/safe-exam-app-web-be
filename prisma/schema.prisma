@@ -7,18 +7,70 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-model user {
+model User {
   created_at   DateTime  @default(now())
   email        String    @unique(map: "User_email_key") @db.VarChar(100)
   name         String?   @db.VarChar(100)
   username     String    @id @unique(map: "User_username_key") @db.VarChar(25)
   password     String
-  updated_at   DateTime
+  updated_at   DateTime  @updatedAt
   login_ip     String
   role         user_role @default(USER)
   last_login   DateTime?
   is_locked    Boolean   @default(false)
   profile_pict String?
+  course       Course[]
+}
+
+model Course {
+  title       String   @id @unique @db.VarChar(60)
+  description String   @db.Text
+  image       String?
+  created_at  DateTime @default(now())
+  updated_at  DateTime @updatedAt
+  user        User     @relation(fields: [created_by], references: [username])
+  created_by  String   @db.VarChar(25)
+}
+
+model Exam {
+  id              Int            @id @default(autoincrement())
+  title           String         @db.VarChar(255)
+  created_at      DateTime       @default(now())
+  updated_at      DateTime       @updatedAt
+  start_password  String         @db.VarChar(100)
+  end_password    String         @db.VarChar(100)
+  submit_password String         @db.VarChar(100)
+  start_date      DateTime?
+  end_date        DateTime?
+  sequential      Boolean        @default(false)
+  random_question Boolean        @default(false)
+  random_answer   Boolean        @default(false)
+  show_result     Boolean        @default(false)
+  show_grade      Boolean        @default(false)
+  grade           Decimal?
+  description     String         @db.Text
+  questions       ExamQuestion[]
+}
+
+model Question {
+  id            Int            @id @default(autoincrement())
+  content       String         @db.Text
+  type          String         @db.VarChar(50)
+  options       Json?          @db.Json
+  correctAnswer String?        @db.Text
+  point         Decimal?
+  exams         ExamQuestion[]
+  created_at    DateTime       @default(now())
+  updated_at    DateTime       @updatedAt
+}
+
+model ExamQuestion {
+  examId     Int
+  questionId Int
+  exam       Exam     @relation(fields: [examId], references: [id], onDelete: Cascade)
+  question   Question @relation(fields: [questionId], references: [id], onDelete: Cascade)
+
+  @@id([examId, questionId])
 }
 
 enum user_role {
