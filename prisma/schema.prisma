@@ -8,18 +8,20 @@ datasource db {
 }
 
 model User {
-  created_at   DateTime  @default(now())
-  email        String    @unique(map: "User_email_key") @db.VarChar(100)
-  name         String?   @db.VarChar(100)
-  username     String    @id @unique(map: "User_username_key") @db.VarChar(25)
+  created_at   DateTime   @default(now())
+  email        String     @unique(map: "User_email_key") @db.VarChar(100)
+  name         String?    @db.VarChar(100)
+  username     String     @id @unique(map: "User_username_key") @db.VarChar(25)
   password     String
-  updated_at   DateTime  @updatedAt
-  login_ip     String
-  role         user_role @default(USER)
+  updated_at   DateTime   @updatedAt
+  login_ip     String?
+  role         user_role  @default(USER)
   last_login   DateTime?
-  is_locked    Boolean   @default(false)
+  is_locked    Boolean    @default(false)
   profile_pict String?
   course       Course[]
+  exam         Exam[]
+  question     Question[]
 }
 
 model Course {
@@ -30,6 +32,7 @@ model Course {
   updated_at  DateTime @updatedAt
   user        User     @relation(fields: [created_by], references: [username])
   created_by  String   @db.VarChar(25)
+  exams       Exam[]
 }
 
 model Exam {
@@ -50,6 +53,10 @@ model Exam {
   grade           Decimal?
   description     String         @db.Text
   questions       ExamQuestion[]
+  course          Course         @relation(fields: [course_title], references: [title])
+  course_title    String         @db.VarChar(60)
+  user            User           @relation(fields: [created_by], references: [username])
+  created_by      String         @db.VarChar(25)
 }
 
 model Question {
@@ -62,6 +69,8 @@ model Question {
   exams         ExamQuestion[]
   created_at    DateTime       @default(now())
   updated_at    DateTime       @updatedAt
+  user          User           @relation(fields: [created_by], references: [username])
+  created_by    String         @db.VarChar(25)
 }
 
 model ExamQuestion {

@@ -3,7 +3,7 @@ import { extname, join } from 'path';
 
 export const uploadProfilePict = {
   storage: diskStorage({
-    destination: join(__dirname, '..', 'public/profile_pict'), // Folder tempat menyimpan file
+    destination: join(__dirname, '..', 'public/profile_pict'),
     filename: (req, file, callback) => {
       const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1e9);
       const ext = extname(file.originalname);
@@ -12,6 +12,20 @@ export const uploadProfilePict = {
     },
   }),
   limits: {
-    fileSize: 5 * 1024 * 1024, // Batasan ukuran file 5MB
+    fileSize: 5 * 1024 * 1024,
+  },
+};
+
+export const uploadCoursePict = {
+  storage: diskStorage({
+    destination: join(__dirname, '..', 'public/course_pict'),
+    filename: (req, file, callback) => {
+      const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1e9);
+      const filename = `${file.fieldname}-${uniqueSuffix}.png`;
+      callback(null, filename);
+    },
+  }),
+  limits: {
+    fileSize: 5 * 1024 * 1024,
   },
 };

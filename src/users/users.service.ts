@@ -95,7 +95,7 @@ export class UsersService {
     return this.prismaService.user.findMany();
   }
 
-  async create(createuserDto: CreateUserDto) {
+  async create(createuserDto: CreateUserDto, file: Express.Multer.File) {
     return this.prismaService.user.create({
       data: {
         username: createuserDto.username,
@@ -104,9 +104,8 @@ export class UsersService {
         ),
         email: createuserDto.email,
         name: createuserDto.name,
+        profile_pict: `profile_pict/${file.filename}`,
         created_at: new Date(),
-        updated_at: new Date(),
-        login_ip: '0.0.0.0',
       },
     });
   }

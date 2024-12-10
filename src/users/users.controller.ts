@@ -41,9 +41,14 @@ export class UsersController {
   }
 
   @Post('')
-  async create(@Res() res: Response, @Body() createuserDto: CreateUserDto) {
+  @UseInterceptors(FileInterceptor('profile_pict', uploadProfilePict))
+  async create(
+    @UploadedFile() file: Express.Multer.File,
+    @Res() res: Response,
+    @Body() createuserDto: CreateUserDto,
+  ) {
     try {
-      const createdUser = await this.usersService.create(createuserDto);
+      const createdUser = await this.usersService.create(createuserDto, file);
 
       const { password, login_ip, created_at, updated_at, is_locked, ...data } =
         createdUser;
