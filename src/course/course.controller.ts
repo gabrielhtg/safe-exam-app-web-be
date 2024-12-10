@@ -10,6 +10,7 @@ import {
   UploadedFile,
   Res,
   UseGuards,
+  Query,
 } from '@nestjs/common';
 import { CourseService } from './course.service';
 import { CreateCourseDto } from './dto/create-course.dto';
@@ -36,8 +37,13 @@ export class CourseController {
 
   @UseGuards(AuthGuard)
   @Get()
-  async findAll(@Res() res: Response) {
-    return this.courseService.findAll(res);
+  async findAll(
+    @Query('sortBy') sortBy: string,
+    @Query('orderBy') order: 'asc' | 'desc',
+    @Query('take') take: string,
+    @Res() res: Response,
+  ) {
+    return this.courseService.findAll(sortBy, order, +take, res);
   }
 
   @UseGuards(AuthGuard)

@@ -25,14 +25,15 @@ model User {
 }
 
 model Course {
-  title       String   @id @unique @db.VarChar(60)
-  description String   @db.Text
+  title       String    @id @unique @db.VarChar(60)
+  description String    @db.Text
   image       String?
-  created_at  DateTime @default(now())
-  updated_at  DateTime @updatedAt
-  user        User     @relation(fields: [created_by], references: [username])
-  created_by  String   @db.VarChar(25)
+  created_at  DateTime  @default(now())
+  updated_at  DateTime  @updatedAt
+  user        User      @relation(fields: [created_by], references: [username])
+  created_by  String    @db.VarChar(25)
   exams       Exam[]
+  last_access DateTime?
 }
 
 model Exam {

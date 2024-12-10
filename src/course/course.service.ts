@@ -28,10 +28,20 @@ export class CourseService {
     });
   }
 
-  async findAll(res: Response) {
+  async findAll(
+    sortBy: string,
+    order: 'asc' | 'desc',
+    take: number,
+    res: Response,
+  ) {
     return res.status(HttpStatus.OK).json({
       message: 'ok',
-      data: await this.prismaService.course.findMany(),
+      data: await this.prismaService.course.findMany({
+        take: take > 0 ? take : undefined,
+        orderBy: {
+          [sortBy]: order,
+        },
+      }),
     });
   }
 
