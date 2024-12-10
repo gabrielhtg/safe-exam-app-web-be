@@ -6,19 +6,18 @@ import { JwtModule } from '@nestjs/jwt';
 import { UsersModule } from '../users/users.module';
 import { SecurityService } from '../security/security.service';
 import { EmailService } from '../emailService/email.service';
-import { jwtConstants } from './constants'
-
+import { jwtConstants } from './constants';
 
 @Module({
   controllers: [AuthController],
-  providers: [AuthService, SecurityService,EmailService],
+  providers: [AuthService, SecurityService, EmailService],
   imports: [
     ConfigModule.forRoot(),
     UsersModule,
     JwtModule.register({
       global: true,
       secret: jwtConstants.secret,
-      signOptions: { expiresIn: '15m' },
+      signOptions: { expiresIn: '24h' },
     }),
   ],
 })

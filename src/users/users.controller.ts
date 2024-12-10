@@ -10,6 +10,7 @@ import {
   Put,
   Res,
   UploadedFile,
+  UseGuards,
   UseInterceptors,
 } from '@nestjs/common';
 import { UsersService } from './users.service';
@@ -18,11 +19,13 @@ import { CreateUserDto } from './dto/create-user.dto';
 import { PrismaClientKnownRequestError } from '@prisma/client/runtime/library';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { uploadProfilePict } from '../multer.config';
+import { AuthGuard } from '../auth/auth.guard';
 
 @Controller('users')
 export class UsersController {
   constructor(private readonly usersService: UsersService) {}
 
+  @UseGuards(AuthGuard)
   @Get()
   async findAll(@Res() res: Response) {
     const users = await this.usersService.findAll();
@@ -75,11 +78,13 @@ export class UsersController {
     });
   }
 
+  @UseGuards(AuthGuard)
   @Get(':username')
   findOne(@Param('username') username: string, @Res() res: Response) {
     return this.usersService.findOne(username, res);
   }
 
+  @UseGuards(AuthGuard)
   @Put()
   @UseInterceptors(FileInterceptor('profile_pict', uploadProfilePict))
   async update(
@@ -95,11 +100,13 @@ export class UsersController {
     });
   }
 
+  @UseGuards(AuthGuard)
   @Patch('password')
   async changePassword(@Body() reqBody: any, @Res() res: Response) {
     return await this.usersService.changePassword(reqBody, res);
   }
 
+  @UseGuards(AuthGuard)
   @Delete(':id')
   async remove(@Param('id') username: string, @Res() res: Response) {
     try {
