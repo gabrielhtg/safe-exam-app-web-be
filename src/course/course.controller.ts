@@ -47,17 +47,20 @@ export class CourseController {
   }
 
   @UseGuards(AuthGuard)
-  @Patch(':id')
+  @Patch()
+  @UseInterceptors(FileInterceptor('course_pict', uploadCoursePict))
   async update(
-    @Param('id') id: string,
-    @Body() updateCourseDto: UpdateCourseDto,
+    @UploadedFile() file: Express.Multer.File,
+    @Body()
+    updateCourseDto: UpdateCourseDto,
+    @Res() res: Response,
   ) {
-    return this.courseService.update(+id, updateCourseDto);
+    return this.courseService.update(updateCourseDto, res, file);
   }
 
   @UseGuards(AuthGuard)
   @Delete(':id')
-  async remove(@Param('id') id: string) {
-    return this.courseService.remove(+id);
+  async remove(@Param('id') id: string, @Res() res: Response) {
+    return this.courseService.remove(id, res);
   }
 }

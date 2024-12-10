@@ -39,11 +39,54 @@ export class CourseService {
     return `This action returns a #${id} course`;
   }
 
-  async update(id: number, updateCourseDto: UpdateCourseDto) {
-    return `This action updates a #${id} course`;
+  async update(
+    updateCourseDto: UpdateCourseDto,
+    res: Response,
+    file: Express.Multer.File,
+  ) {
+    let updateData: any | null;
+
+    if (file !== undefined) {
+      updateData = await this.prismaService.course.update({
+        where: {
+          title: updateCourseDto.old_title,
+        },
+        data: {
+          title: updateCourseDto.title,
+          description: updateCourseDto.description,
+          image: `course_pict/${file.filename}`,
+          created_by: updateCourseDto.username,
+        },
+      });
+    } else {
+      updateData = await this.prismaService.course.update({
+        where: {
+          title: updateCourseDto.old_title,
+        },
+        data: {
+          title: updateCourseDto.title,
+          description: updateCourseDto.description,
+          created_by: updateCourseDto.username,
+        },
+      });
+    }
+
+    return res.status(HttpStatus.OK).json({
+      message: 'Updated Successfully',
+      data: updateData,
+    });
   }
 
-  async remove(id: number) {
-    return `This action removes a #${id} course`;
+  async remove(id: string, res: Response) {
+    const removeData = await this.prismaService.course.delete({
+      where: {
+        title: id,
+      },
+    });
+
+    return res.status(HttpStatus.OK).json({
+      message: 'Deleted Successfully!',
+      data: removeData,
+    });
   }
 }
