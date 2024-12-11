@@ -41,15 +41,16 @@ export class CourseController {
     @Query('sortBy') sortBy: string,
     @Query('orderBy') order: 'asc' | 'desc',
     @Query('take') take: string,
+    @Query('search') search: string,
     @Res() res: Response,
   ) {
-    return this.courseService.findAll(sortBy, order, +take, res);
+    return this.courseService.findAll(sortBy, order, +take, search, res);
   }
 
   @UseGuards(AuthGuard)
   @Get(':id')
-  async findOne(@Param('id') id: string) {
-    return this.courseService.findOne(+id);
+  async findOne(@Param('id') id: string, @Res() res: Response) {
+    return this.courseService.findOne(id, res);
   }
 
   @UseGuards(AuthGuard)

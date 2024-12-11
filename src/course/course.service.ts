@@ -32,11 +32,17 @@ export class CourseService {
     sortBy: string,
     order: 'asc' | 'desc',
     take: number,
+    search: string,
     res: Response,
   ) {
     return res.status(HttpStatus.OK).json({
       message: 'ok',
       data: await this.prismaService.course.findMany({
+        where: {
+          title: {
+            startsWith: search,
+          },
+        },
         take: take > 0 ? take : undefined,
         orderBy: {
           [sortBy]: order,
@@ -45,8 +51,24 @@ export class CourseService {
     });
   }
 
-  async findOne(id: number) {
-    return `This action returns a #${id} course`;
+  async findOne(id: string, res: Response) {
+    const course = await this.prismaService.course.findUnique({
+      where: {
+        title: id,
+      },
+    });
+
+    if (course) {
+      return res.status(HttpStatus.OK).json({
+        message: 'ok',
+        data: course,
+      });
+    }
+
+    return res.status(HttpStatus.BAD_REQUEST).json({
+      message: 'Course not found',
+      data: null,
+    });
   }
 
   async update(
