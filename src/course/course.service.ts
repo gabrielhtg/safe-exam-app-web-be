@@ -33,6 +33,7 @@ export class CourseService {
     order: 'asc' | 'desc',
     take: number,
     search: string,
+    uploader: string,
     res: Response,
   ) {
     return res.status(HttpStatus.OK).json({
@@ -42,6 +43,7 @@ export class CourseService {
           title: {
             startsWith: search,
           },
+          created_by: uploader,
         },
         take: take > 0 ? take : undefined,
         orderBy: {

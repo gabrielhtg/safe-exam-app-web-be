@@ -42,9 +42,17 @@ export class CourseController {
     @Query('orderBy') order: 'asc' | 'desc',
     @Query('take') take: string,
     @Query('search') search: string,
+    @Query('uploader') uploader: string,
     @Res() res: Response,
   ) {
-    return this.courseService.findAll(sortBy, order, +take, search, res);
+    return this.courseService.findAll(
+      sortBy,
+      order,
+      +take,
+      search,
+      uploader,
+      res,
+    );
   }
 
   @UseGuards(AuthGuard)

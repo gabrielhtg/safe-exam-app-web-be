@@ -5,12 +5,11 @@ import { AuthService } from './auth.service';
 import { JwtModule } from '@nestjs/jwt';
 import { UsersModule } from '../users/users.module';
 import { SecurityService } from '../security/security.service';
-import { EmailService } from '../emailService/email.service';
 import { jwtConstants } from './constants';
 
 @Module({
   controllers: [AuthController],
-  providers: [AuthService, SecurityService, EmailService],
+  providers: [AuthService, SecurityService],
   imports: [
     ConfigModule.forRoot(),
     UsersModule,

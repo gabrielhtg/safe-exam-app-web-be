@@ -25,15 +25,16 @@ model User {
 }
 
 model Course {
-  title       String    @id @unique @db.VarChar(60)
-  description String    @db.Text
+  title       String     @id @unique @db.VarChar(60)
+  description String     @db.Text
   image       String?
-  created_at  DateTime  @default(now())
-  updated_at  DateTime  @updatedAt
-  user        User      @relation(fields: [created_by], references: [username])
-  created_by  String    @db.VarChar(25)
+  created_at  DateTime   @default(now())
+  updated_at  DateTime   @updatedAt
+  user        User       @relation(fields: [created_by], references: [username])
+  created_by  String     @db.VarChar(25)
   exams       Exam[]
   last_access DateTime?
+  Question    Question[]
 }
 
 model Exam {
@@ -42,7 +43,7 @@ model Exam {
   created_at      DateTime       @default(now())
   updated_at      DateTime       @updatedAt
   start_password  String         @db.VarChar(100)
-  end_password    String         @db.VarChar(100)
+  end_password    String?        @db.VarChar(100)
   submit_password String         @db.VarChar(100)
   start_date      DateTime?
   end_date        DateTime?
@@ -54,6 +55,7 @@ model Exam {
   grade           Decimal?
   description     String         @db.Text
   questions       ExamQuestion[]
+  max_score       Decimal        @default(100)
   course          Course         @relation(fields: [course_title], references: [title])
   course_title    String         @db.VarChar(60)
   user            User           @relation(fields: [created_by], references: [username])
@@ -61,17 +63,18 @@ model Exam {
 }
 
 model Question {
-  id            Int            @id @default(autoincrement())
-  content       String         @db.Text
-  type          String         @db.VarChar(50)
-  options       Json?          @db.Json
-  correctAnswer String?        @db.Text
-  point         Decimal?
-  exams         ExamQuestion[]
-  created_at    DateTime       @default(now())
-  updated_at    DateTime       @updatedAt
-  user          User           @relation(fields: [created_by], references: [username])
-  created_by    String         @db.VarChar(25)
+  id           Int            @id @default(autoincrement())
+  content      String         @db.LongText
+  type         String         @db.VarChar(50)
+  options      Json?          @db.Json
+  point        Decimal?
+  exams        ExamQuestion[]
+  course       Course         @relation(fields: [course_title], references: [title])
+  course_title String         @db.VarChar(60)
+  created_at   DateTime       @default(now())
+  updated_at   DateTime       @updatedAt
+  user         User           @relation(fields: [created_by], references: [username])
+  created_by   String         @db.VarChar(25)
 }
 
 model ExamQuestion {
