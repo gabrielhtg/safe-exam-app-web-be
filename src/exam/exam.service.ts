@@ -163,10 +163,10 @@ export class ExamService {
       if (question.type === 'multiple') {
         question.options.forEach((option: any) => {
           if (option.id === answerData[question.id] && option.isCorrect) {
-            tempScore++;
+            tempScore = tempScore + +question.point;
             correctQuestion = {
               ...correctQuestion,
-              [question.id]: tempScore,
+              [question.id]: +question.point,
             };
           }
         });
@@ -204,34 +204,33 @@ export class ExamService {
       tempTotalScore = tempTotalScore + +question.point;
     });
 
-    console.log(correctQuestion);
+    const getExamResultData = await this.prismaService.examResult.findMany({
+      where: {
+        exam_id: examData.id,
+        user_username: username,
+      },
+    });
 
-    // const getExamResultData = await this.prismaService.examResult.findMany({
-    //   where: {
-    //     exam_id: examData.id,
-    //     user_username: username,
-    //   },
-    // });
+    const createExamResultData = await this.prismaService.examResult.create({
+      data: {
+        exam_id: examData.id,
+        user_username: username,
+        total_score: tempTotalScore,
+        attemp: getExamResultData.length + 1,
+      },
+    });
 
-    // const createExamResultData = await this.prismaService.examResult.create({
-    //   data: {
-    //     exam_id: examData.id,
-    //     user_username: username,
-    //     total_score: tempTotalScore,
-    //     attemp: getExamResultData.length + 1,
-    //   },
-    // });
-
-    // for (let i = 0; i < questionsData.length; i++) {
-    //   await this.prismaService.examAnswer.create({
-    //     data: {
-    //       result_id: createExamResultData.id,
-    //       question_id: questionsData[i].id,
-    //       answer: answerData[questionsData[i].id],
-    //       is_correct: correctQuestion.includes(questionsData[i].id),
-    //     },
-    //   });
-    // }
+    for (let i = 0; i < questionsData.length; i++) {
+      await this.prismaService.examAnswer.create({
+        data: {
+          result_id: createExamResultData.id,
+          question_id: questionsData[i].id,
+          answer: answerData[questionsData[i].id],
+          is_correct: !!correctQuestion[questionsData[i].id],
+          score: correctQuestion[questionsData[i].id],
+        },
+      });
+    }
 
     return res.status(HttpStatus.OK).json({
       message: `Exam submission successfully!. Point ${tempScore} from ${tempTotalScore}. Grade ${(tempScore / tempTotalScore) * 100}`,
