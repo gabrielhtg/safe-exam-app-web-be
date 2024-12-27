@@ -8,20 +8,21 @@ datasource db {
 }
 
 model User {
-  created_at   DateTime   @default(now())
-  email        String     @unique(map: "User_email_key") @db.VarChar(100)
-  name         String?    @db.VarChar(100)
-  username     String     @id @unique(map: "User_username_key") @db.VarChar(25)
+  created_at   DateTime     @default(now())
+  email        String       @unique(map: "User_email_key") @db.VarChar(100)
+  name         String?      @db.VarChar(100)
+  username     String       @id @unique(map: "User_username_key") @db.VarChar(25)
   password     String
-  updated_at   DateTime   @updatedAt
+  updated_at   DateTime     @updatedAt
   login_ip     String?
-  role         user_role  @default(USER)
+  role         user_role    @default(USER)
   last_login   DateTime?
-  is_locked    Boolean    @default(false)
+  is_locked    Boolean      @default(false)
   profile_pict String?
   course       Course[]
   exam         Exam[]
   question     Question[]
+  ExamResult   ExamResult[]
 }
 
 model Course {
@@ -38,28 +39,32 @@ model Course {
 }
 
 model Exam {
-  id              Int            @id @default(autoincrement())
-  title           String         @db.VarChar(255)
-  created_at      DateTime       @default(now())
-  updated_at      DateTime       @updatedAt
-  start_password  String         @db.VarChar(100)
-  end_password    String?        @db.VarChar(100)
-  submit_password String         @db.VarChar(100)
-  start_date      DateTime?
-  end_date        DateTime?
-  sequential      Boolean        @default(false)
-  random_question Boolean        @default(false)
-  random_answer   Boolean        @default(false)
-  show_result     Boolean        @default(false)
-  show_grade      Boolean        @default(false)
-  grade           Decimal?
-  description     String         @db.Text
-  questions       ExamQuestion[]
-  max_score       Decimal        @default(100)
-  course          Course         @relation(fields: [course_title], references: [title])
-  course_title    String         @db.VarChar(60)
-  user            User           @relation(fields: [created_by], references: [username])
-  created_by      String         @db.VarChar(25)
+  id                Int            @id @default(autoincrement())
+  title             String         @db.VarChar(255)
+  created_at        DateTime       @default(now())
+  updated_at        DateTime       @updatedAt
+  start_password    String         @db.VarChar(100)
+  end_password      String?        @db.VarChar(100)
+  submit_password   String         @db.VarChar(100)
+  start_date        DateTime?
+  end_date          DateTime?
+  sequential        Boolean        @default(false)
+  shuffle_options   Boolean        @default(true)
+  shuffle_questions Boolean        @default(true)
+  enable_review     Boolean        @default(false)
+  show_grade        Boolean        @default(true)
+  passing_grade     Decimal?       @default(75)
+  description       String         @db.Text
+  time_limit        Int?
+  questions         ExamQuestion[]
+  enable_proctoring Boolean        @default(false)
+  allowed_attemps   Int            @default(1)
+  cheating_limit    Int            @default(5)
+  course            Course         @relation(fields: [course_title], references: [title])
+  course_title      String         @db.VarChar(60)
+  user              User           @relation(fields: [created_by], references: [username])
+  created_by        String         @db.VarChar(25)
+  ExamResult        ExamResult[]
 }
 
 model Question {
@@ -75,6 +80,7 @@ model Question {
   updated_at   DateTime       @updatedAt
   user         User           @relation(fields: [created_by], references: [username])
   created_by   String         @db.VarChar(25)
+  ExamAnswer   ExamAnswer[]
 }
 
 model ExamQuestion {
@@ -84,6 +90,32 @@ model ExamQuestion {
   question   Question @relation(fields: [questionId], references: [id], onDelete: Cascade)
 
   @@id([examId, questionId])
+}
+
+model ExamResult {
+  id            Int          @id @default(autoincrement())
+  exam          Exam         @relation(fields: [exam_id], references: [id])
+  exam_id       Int
+  user          User         @relation(fields: [user_username], references: [username])
+  user_username String       @db.VarChar(25)
+  total_score   Decimal?     @default(0)
+  attemp        Int
+  created_at    DateTime     @default(now())
+  updated_at    DateTime     @updatedAt
+  answers       ExamAnswer[]
+}
+
+model ExamAnswer {
+  id          Int        @id @default(autoincrement())
+  result      ExamResult @relation(fields: [result_id], references: [id], onDelete: Cascade)
+  result_id   Int
+  question    Question   @relation(fields: [question_id], references: [id])
+  question_id Int
+  answer      Json?      @db.Json
+  is_correct  Boolean?   @default(false)
+  score       Decimal?   @default(0)
+  created_at  DateTime   @default(now())
+  updated_at  DateTime   @updatedAt
 }
 
 enum user_role {

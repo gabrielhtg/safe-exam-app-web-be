@@ -46,20 +46,26 @@ export class ExamController {
   }
 
   @Get(':id')
-  async findOne(@Param('id') id: string, @Res() res: Response) {
-    return res.status(200).json({
-      message: 'Success',
-      data: await this.examService.findOne(+id, res),
-    });
+  findOne(@Param('id') id: string, @Res() res: Response) {
+    this.examService.findOne(+id, res);
   }
 
   @Patch(':id')
-  update(@Param('id') id: string, @Body() updateExamDto: any) {
-    return this.examService.update(+id, updateExamDto);
+  update(
+    @Param('id') id: string,
+    @Body() updateData: any,
+    @Res() res: Response,
+  ) {
+    return this.examService.update(+id, updateData, res);
   }
 
   @Delete(':id')
   remove(@Param('id') id: string, @Res() res: Response) {
     return this.examService.remove(+id, res);
+  }
+
+  @Post('submit')
+  async submit(@Body() submitData: any, @Res() res: Response) {
+    return this.examService.submit(submitData, res);
   }
 }

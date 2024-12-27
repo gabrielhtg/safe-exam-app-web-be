@@ -44,18 +44,27 @@ export class QuestionController {
     );
   }
 
+  @Get('shuffled')
+  findAllShuffled(@Query('exam') exam: string, @Res() res: Response) {
+    return this.questionService.findAllShuffled(+exam, res);
+  }
+
   @Get(':id')
   findOne(@Param('id') id: string) {
     return this.questionService.findOne(+id);
   }
 
   @Patch(':id')
-  update(@Param('id') id: string, @Body() updateQuestionDto: any) {
-    return this.questionService.update(+id, updateQuestionDto);
+  update(
+    @Param('id') id: string,
+    @Body() updateData: any,
+    @Res() res: Response,
+  ) {
+    return this.questionService.update(+id, updateData, res);
   }
 
   @Delete(':id')
-  remove(@Param('id') id: string) {
-    return this.questionService.remove(+id);
+  remove(@Param('id') id: string, @Res() res: Response) {
+    return this.questionService.remove(+id, res);
   }
 }

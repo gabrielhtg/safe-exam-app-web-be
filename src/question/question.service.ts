@@ -1,6 +1,7 @@
 import { HttpStatus, Injectable } from '@nestjs/common';
 import { Response } from 'express';
 import { PrismaService } from '../prisma.service';
+import * as _ from 'lodash';
 
 @Injectable()
 export class QuestionService {
@@ -11,10 +12,22 @@ export class QuestionService {
       data: {
         content: data.content,
         type: data.type,
-        options: data.options,
         point: data.remarks,
         created_by: data.created_by,
         course_title: data.course,
+      },
+    });
+
+    data.options.forEach((option: any, index: number) => {
+      option['id'] = `${createQuestionData.id}.${index}`;
+    });
+
+    const createOptions = await this.prismaService.question.update({
+      where: {
+        id: createQuestionData.id,
+      },
+      data: {
+        options: data.options,
       },
     });
 
@@ -28,7 +41,7 @@ export class QuestionService {
     return res.status(200).json({
       message: 'Question saved successfully.',
       data: {
-        question_data: createQuestionData,
+        question_data: createOptions,
         relation_data: questionRelationData,
       },
     });
@@ -44,26 +57,50 @@ export class QuestionService {
     uploader: string,
     res: Response,
   ) {
+    const getData: any = await this.prismaService.question.findMany({
+      where: {
+        content: {
+          contains: search,
+        },
+        created_by: uploader,
+        course_title: course,
+        exams: {
+          some: {
+            examId: exam,
+          },
+        },
+      },
+      take: take > 0 ? take : undefined,
+      orderBy: {
+        [sortBy]: order,
+      },
+    });
+
     return res.status(HttpStatus.OK).json({
       message: 'ok',
-      data: await this.prismaService.question.findMany({
-        where: {
-          content: {
-            contains: search,
-          },
-          created_by: uploader,
-          course_title: course,
-          exams: {
-            some: {
-              examId: exam,
-            },
+      data: getData,
+    });
+  }
+
+  async findAllShuffled(exam: number, res: Response) {
+    const getData: any = await this.prismaService.question.findMany({
+      where: {
+        exams: {
+          every: {
+            examId: exam,
           },
         },
-        take: take > 0 ? take : undefined,
-        orderBy: {
-          [sortBy]: order,
-        },
-      }),
+      },
+    });
+
+    const shuffledOptions = getData.map((question: any) => ({
+      ...question,
+      options: _.shuffle(question.options),
+    }));
+
+    return res.status(HttpStatus.OK).json({
+      message: 'ok',
+      data: shuffledOptions,
     });
   }
 
@@ -71,11 +108,19 @@ export class QuestionService {
     return `This action returns a #${id} question`;
   }
 
-  update(id: number, updateQuestionDto: any) {
-    return `This action updates a #${id} question`;
+  async update(id: number, updateData: any, res: Response) {
+    return false;
   }
+  async remove(id: number, res: Response) {
+    const removeData = await this.prismaService.question.delete({
+      where: {
+        id: id,
+      },
+    });
 
-  remove(id: number) {
-    return `This action removes a #${id} question`;
+    return res.status(200).json({
+      message: 'Question deleted successfully!',
+      data: removeData,
+    });
   }
 }
