@@ -215,7 +215,8 @@ export class ExamService {
       data: {
         exam_id: examData.id,
         user_username: username,
-        total_score: tempTotalScore,
+        total_score: tempScore,
+        expected_score: tempTotalScore,
         attemp: getExamResultData.length + 1,
       },
     });

@@ -93,16 +93,17 @@ model ExamQuestion {
 }
 
 model ExamResult {
-  id            Int          @id @default(autoincrement())
-  exam          Exam         @relation(fields: [exam_id], references: [id])
-  exam_id       Int
-  user          User         @relation(fields: [user_username], references: [username])
-  user_username String       @db.VarChar(25)
-  total_score   Decimal?     @default(0)
-  attemp        Int
-  created_at    DateTime     @default(now())
-  updated_at    DateTime     @updatedAt
-  answers       ExamAnswer[]
+  id             Int          @id @default(autoincrement())
+  exam           Exam         @relation(fields: [exam_id], references: [id])
+  exam_id        Int
+  user           User         @relation(fields: [user_username], references: [username])
+  user_username  String       @db.VarChar(25)
+  total_score    Decimal?     @default(0)
+  expected_score Decimal?     @default(0)
+  attemp         Int
+  created_at     DateTime     @default(now())
+  updated_at     DateTime     @updatedAt
+  answers        ExamAnswer[]
 }
 
 model ExamAnswer {

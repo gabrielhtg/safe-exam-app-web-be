@@ -8,6 +8,7 @@ import { join } from 'path';
 import { CourseModule } from './course/course.module';
 import { ExamModule } from './exam/exam.module';
 import { QuestionModule } from './question/question.module';
+import { ExamResultModule } from './exam-result/exam-result.module';
 
 @Module({
   imports: [
@@ -19,6 +20,7 @@ import { QuestionModule } from './question/question.module';
     CourseModule,
     ExamModule,
     QuestionModule,
+    ExamResultModule,
   ],
   controllers: [AppController],
   providers: [AppService],
