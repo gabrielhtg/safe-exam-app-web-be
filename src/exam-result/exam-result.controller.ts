@@ -7,9 +7,12 @@ import {
   Param,
   Delete,
   Res,
+  UseGuards,
+  Query,
 } from '@nestjs/common';
 import { ExamResultService } from './exam-result.service';
 import { Response } from 'express';
+import { AuthGuard } from '../auth/auth.guard';
 
 @Controller('exam-result')
 export class ExamResultController {
@@ -20,10 +23,11 @@ export class ExamResultController {
     return this.examResultService.create(createExamResultDto);
   }
 
+  @UseGuards(AuthGuard)
   @Get()
   findAll(
-    @Param('username') username: string,
-    @Param('exam') exam_id: number,
+    @Query('username') username: string,
+    @Query('exam') exam_id: number,
     @Res() res: Response,
   ) {
     return this.examResultService.findAll(username, exam_id, res);
@@ -44,12 +48,13 @@ export class ExamResultController {
   //   return this.examResultService.remove(+id);
   // }
 
+  @UseGuards(AuthGuard)
   @Delete('reset')
   reset(
-    @Param('exam_id') exam_id: number,
-    @Param('username') username: string,
+    @Query('exam_id') exam_id: string,
+    @Query('username') username: string,
     @Res() res: Response,
   ) {
-    return this.examResultService.removeAll(exam_id, username, res);
+    return this.examResultService.removeAll(+exam_id, username, res);
   }
 }

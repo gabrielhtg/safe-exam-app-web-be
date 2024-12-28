@@ -14,7 +14,7 @@ export class ExamResultService {
     const findAllData = await this.prismaService.examResult.findMany({
       where: {
         user_username: username,
-        exam_id: exam_id,
+        exam_id: +exam_id,
       },
     });
 

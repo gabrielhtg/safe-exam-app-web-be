@@ -18,6 +18,7 @@ import { AuthGuard } from '../auth/auth.guard';
 export class ExamController {
   constructor(private readonly examService: ExamService) {}
 
+  @UseGuards(AuthGuard)
   @Post()
   async create(@Body() createExamDto: any, @Res() res: Response) {
     return this.examService.create(createExamDto, res);
@@ -45,11 +46,13 @@ export class ExamController {
     );
   }
 
+  @UseGuards(AuthGuard)
   @Get(':id')
   findOne(@Param('id') id: string, @Res() res: Response) {
     this.examService.findOne(+id, res);
   }
 
+  @UseGuards(AuthGuard)
   @Patch(':id')
   update(
     @Param('id') id: string,
@@ -59,11 +62,13 @@ export class ExamController {
     return this.examService.update(+id, updateData, res);
   }
 
+  @UseGuards(AuthGuard)
   @Delete(':id')
   remove(@Param('id') id: string, @Res() res: Response) {
     return this.examService.remove(+id, res);
   }
 
+  @UseGuards(AuthGuard)
   @Post('submit')
   async submit(@Body() submitData: any, @Res() res: Response) {
     return this.examService.submit(submitData, res);
