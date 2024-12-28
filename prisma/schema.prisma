@@ -58,7 +58,7 @@ model Exam {
   time_limit        Int?
   questions         ExamQuestion[]
   enable_proctoring Boolean        @default(false)
-  allowed_attemps   Int            @default(1)
+  allowed_attempts  Int            @default(1)
   cheating_limit    Int            @default(5)
   course            Course         @relation(fields: [course_title], references: [title])
   course_title      String         @db.VarChar(60)
@@ -100,7 +100,7 @@ model ExamResult {
   user_username  String       @db.VarChar(25)
   total_score    Decimal?     @default(0)
   expected_score Decimal?     @default(0)
-  attemp         Int
+  attempt        Int          @default(0)
   created_at     DateTime     @default(now())
   updated_at     DateTime     @updatedAt
   answers        ExamAnswer[]

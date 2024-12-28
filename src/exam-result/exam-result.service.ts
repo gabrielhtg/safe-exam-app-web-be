@@ -35,4 +35,20 @@ export class ExamResultService {
   remove(id: number) {
     return `This action removes a #${id} examResult`;
   }
+
+  async removeAll(examId: number, username: string, res: Response) {
+    console.log(examId);
+    console.log(username);
+    const removeData = await this.prismaService.examResult.deleteMany({
+      where: {
+        exam_id: examId,
+        user_username: username,
+      },
+    });
+
+    return res.status(200).json({
+      message: 'Reset Success',
+      data: removeData,
+    });
+  }
 }

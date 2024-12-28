@@ -39,8 +39,17 @@ export class ExamResultController {
     return this.examResultService.update(+id, updateExamResultDto);
   }
 
-  @Delete(':id')
-  remove(@Param('id') id: string) {
-    return this.examResultService.remove(+id);
+  // @Delete(':id')
+  // remove(@Param('id') id: string) {
+  //   return this.examResultService.remove(+id);
+  // }
+
+  @Delete('reset')
+  reset(
+    @Param('exam_id') exam_id: number,
+    @Param('username') username: string,
+    @Res() res: Response,
+  ) {
+    return this.examResultService.removeAll(exam_id, username, res);
   }
 }

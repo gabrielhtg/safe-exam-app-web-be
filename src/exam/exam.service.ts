@@ -114,7 +114,7 @@ export class ExamService {
           cheating_limit: updateData.cheating_limit
             ? updateData.cheating_limit
             : undefined,
-          allowed_attemps: updateData.allowed_attemps
+          allowed_attempts: updateData.allowed_attemps
             ? updateData.allowed_attemps
             : undefined,
           time_limit: updateData.time_limit,
@@ -217,7 +217,7 @@ export class ExamService {
         user_username: username,
         total_score: tempScore,
         expected_score: tempTotalScore,
-        attemp: getExamResultData.length + 1,
+        attempt: getExamResultData.length + 1,
       },
     });
 
