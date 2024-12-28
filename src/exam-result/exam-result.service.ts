@@ -37,8 +37,6 @@ export class ExamResultService {
   }
 
   async removeAll(examId: number, username: string, res: Response) {
-    console.log(examId);
-    console.log(username);
     const removeData = await this.prismaService.examResult.deleteMany({
       where: {
         exam_id: examId,
