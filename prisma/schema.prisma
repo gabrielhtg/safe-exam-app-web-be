@@ -74,7 +74,7 @@ model Question {
   options      Json?          @db.Json
   point        Decimal?
   exams        ExamQuestion[]
-  course       Course         @relation(fields: [course_title], references: [title])
+  course       Course         @relation(fields: [course_title], references: [title], onDelete: Cascade)
   course_title String         @db.VarChar(60)
   created_at   DateTime       @default(now())
   updated_at   DateTime       @updatedAt

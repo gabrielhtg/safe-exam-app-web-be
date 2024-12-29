@@ -146,17 +146,8 @@ export class ExamService {
     const examData = submitData.exam;
     const answerData = submitData.answer;
     const questionsData = submitData.questions;
-
-    if (Object.keys(answerData).length === 0) {
-      return res.status(400).json({
-        message: 'No answers yet.',
-        data: null,
-      });
-    }
-
     let tempTotalScore = 0;
     let tempScore = 0;
-
     let correctQuestion = {};
 
     questionsData.forEach((question: any) => {
@@ -173,28 +164,32 @@ export class ExamService {
       } else if (question.type === 'check-box') {
         question.options.forEach((option: any) => {
           if (+option.id.split('.')[0] === question.id) {
-            answerData[question.id].forEach((answer: any) => {
-              if (answer === option.id && option.isCorrect) {
-                tempScore =
-                  tempScore +
-                  (1 /
-                    question.options.filter((tmp: any) => tmp.isCorrect)
-                      .length) *
-                    question.point;
-
-                correctQuestion = {
-                  ...correctQuestion,
-                  [question.id]:
-                    (correctQuestion[question.id]
-                      ? correctQuestion[question.id]
-                      : 0) +
+            try {
+              answerData[question.id].forEach((answer: any) => {
+                if (answer === option.id && option.isCorrect) {
+                  tempScore =
+                    tempScore +
                     (1 /
                       question.options.filter((tmp: any) => tmp.isCorrect)
                         .length) *
-                      question.point,
-                };
-              }
-            });
+                      question.point;
+
+                  correctQuestion = {
+                    ...correctQuestion,
+                    [question.id]:
+                      (correctQuestion[question.id]
+                        ? correctQuestion[question.id]
+                        : 0) +
+                      (1 /
+                        question.options.filter((tmp: any) => tmp.isCorrect)
+                          .length) *
+                        question.point,
+                  };
+                }
+              });
+            } catch (e: any) {
+              return;
+            }
           }
         });
       } else {
@@ -235,7 +230,7 @@ export class ExamService {
 
     return res.status(HttpStatus.OK).json({
       message: `Exam submission successfully!. Point ${tempScore} from ${tempTotalScore}. Grade ${(tempScore / tempTotalScore) * 100}`,
-      data: {},
+      data: createExamResultData,
     });
   }
 }

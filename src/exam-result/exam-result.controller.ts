@@ -33,9 +33,10 @@ export class ExamResultController {
     return this.examResultService.findAll(username, exam_id, res);
   }
 
+  @UseGuards(AuthGuard)
   @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.examResultService.findOne(+id);
+  findOne(@Param('id') id: string, @Res() res: Response) {
+    return this.examResultService.findOne(+id, res);
   }
 
   @Patch(':id')

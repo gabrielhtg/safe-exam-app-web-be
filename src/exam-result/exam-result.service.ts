@@ -24,8 +24,25 @@ export class ExamResultService {
     });
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} examResult`;
+  async findOne(id: number, res: Response) {
+    const findData = await this.prismaService.examResult.findUnique({
+      where: {
+        id: +id,
+      },
+      include: {
+        answers: {
+          include: {
+            question: true,
+          },
+        },
+        exam: true,
+      },
+    });
+
+    return res.status(200).json({
+      message: 'Success',
+      data: findData,
+    });
   }
 
   update(id: number, updateExamResultDto: any) {
