@@ -65,6 +65,7 @@ model Exam {
   user              User           @relation(fields: [created_by], references: [username])
   created_by        String         @db.VarChar(25)
   ExamResult        ExamResult[]
+  AllowedUsers      AllowedUser[]
 }
 
 model Question {
@@ -117,6 +118,17 @@ model ExamAnswer {
   score       Decimal?   @default(0)
   created_at  DateTime   @default(now())
   updated_at  DateTime   @updatedAt
+}
+
+model AllowedUser {
+  id         Int      @id @default(autoincrement())
+  token      String   @db.VarChar(255)
+  nim        String   @db.VarChar(10)
+  nama       String   @db.VarChar(100)
+  exam       Exam     @relation(fields: [exam_id], references: [id], onDelete: Cascade)
+  exam_id    Int
+  created_at DateTime @default(now())
+  updated_at DateTime @updatedAt
 }
 
 enum user_role {

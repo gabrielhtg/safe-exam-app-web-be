@@ -2,6 +2,10 @@ import { HttpStatus, Injectable } from '@nestjs/common';
 import { v4 as uuidv4 } from 'uuid';
 import { Response } from 'express';
 import { PrismaService } from '../prisma.service';
+import * as path from 'node:path';
+import * as fs from 'node:fs';
+import { createCipheriv, randomBytes, scrypt } from 'node:crypto';
+import { promisify } from 'node:util';
 
 @Injectable()
 export class ExamService {
@@ -231,6 +235,79 @@ export class ExamService {
     return res.status(HttpStatus.OK).json({
       message: `Exam submission successfully!. Point ${tempScore} from ${tempTotalScore}. Grade ${(tempScore / tempTotalScore) * 100}`,
       data: createExamResultData,
+    });
+  }
+
+  async generateExamFile(examId: number, res: Response) {
+    const examData = await this.prismaService.exam.findUnique({
+      where: {
+        id: examId,
+      },
+    });
+
+    const courseData = await this.prismaService.course.findUnique({
+      where: {
+        title: examData.course_title,
+      },
+    });
+
+    const examCreatorData = await this.prismaService.user.findUnique({
+      where: {
+        username: examData.created_by,
+      },
+    });
+
+    const allowedUserData = await this.prismaService.allowedUser.findMany({
+      where: {
+        exam_id: examId,
+      },
+    });
+
+    const questionsData = await this.prismaService.question.findMany({
+      where: {
+        exams: {
+          every: {
+            examId: examId,
+          },
+        },
+      },
+    });
+
+    const fileData = {
+      examData,
+      courseData,
+      examCreatorData,
+      allowedUserData,
+      questionsData,
+    };
+
+    const fileName = `${examId}_${examData.title}_honestest_conf.hconf`;
+    const filePath = path.join(
+      __dirname,
+      '..',
+      '..',
+      'public/exam_config_file',
+      fileName,
+    );
+
+    const iv = randomBytes(16);
+    const password = 'Password used to generate key';
+
+    const key = (await promisify(scrypt)(password, 'salt', 32)) as Buffer;
+    const cipher = createCipheriv('aes-256-ctr', key, iv);
+
+    const textToEncrypt = JSON.stringify(fileData, null, 2);
+    const encryptedText = Buffer.concat([
+      cipher.update(textToEncrypt),
+      cipher.final(),
+    ]);
+
+    const encryptedFileData = Buffer.concat([iv, encryptedText]); // Prepend IV to encrypted data
+    fs.writeFileSync(filePath, encryptedFileData);
+
+    return res.status(200).json({
+      message: 'success',
+      data: `exam_config_file/${fileName}`,
     });
   }
 }

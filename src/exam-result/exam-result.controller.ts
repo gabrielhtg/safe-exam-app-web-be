@@ -44,11 +44,6 @@ export class ExamResultController {
     return this.examResultService.update(+id, updateExamResultDto);
   }
 
-  // @Delete(':id')
-  // remove(@Param('id') id: string) {
-  //   return this.examResultService.remove(+id);
-  // }
-
   @UseGuards(AuthGuard)
   @Delete('reset')
   reset(

@@ -42,7 +42,7 @@ lerna-debug.log*
 .env.production.local
 .env.local
 
-# temp directory
+# exam_config_file directory
 .temp
 .tmp
 
@@ -58,3 +58,4 @@ report.[0-9]*.[0-9]*.[0-9]*.[0-9]*.json
 /src/auth/constants.ts
 /public/profile_pict
 /public/course_pict
+/public/exam_config_file
