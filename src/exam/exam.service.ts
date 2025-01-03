@@ -18,7 +18,7 @@ export class ExamService {
         start_password: createExamDto.start_password,
         start_date: createExamDto.start_date,
         end_date: createExamDto.end_date,
-        submit_password: uuidv4(),
+        config_password: uuidv4(),
         description: createExamDto.description,
         created_by: createExamDto.created_by,
         course_title: createExamDto.course_title,
@@ -90,8 +90,8 @@ export class ExamService {
           end_password: updateData.end_password
             ? updateData.end_password
             : undefined,
-          submit_password: updateData.submit_password
-            ? updateData.submit_password
+          config_password: updateData.config_password
+            ? updateData.config_password
             : undefined,
           start_date: updateData.start_date ? updateData.start_date : undefined,
           end_date: updateData.end_date ? updateData.end_date : undefined,
@@ -281,7 +281,10 @@ export class ExamService {
       questionsData,
     };
 
-    const fileName = `${examId}_${examData.title}_honestest_conf.hconf`;
+    const fileName = `${courseData.title}-${examData.title}.ta12`.replaceAll(
+      ' ',
+      '_',
+    );
     const filePath = path.join(
       __dirname,
       '..',
@@ -291,7 +294,7 @@ export class ExamService {
     );
 
     const iv = randomBytes(16);
-    const password = 'Password used to generate key';
+    const password = examData.config_password;
 
     const key = (await promisify(scrypt)(password, 'salt', 32)) as Buffer;
     const cipher = createCipheriv('aes-256-ctr', key, iv);

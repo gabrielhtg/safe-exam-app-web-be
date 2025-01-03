@@ -45,7 +45,7 @@ model Exam {
   updated_at        DateTime       @updatedAt
   start_password    String         @db.VarChar(100)
   end_password      String?        @db.VarChar(100)
-  submit_password   String         @db.VarChar(100)
+  config_password   String?        @db.VarChar(100)
   start_date        DateTime?
   end_date          DateTime?
   sequential        Boolean        @default(false)
