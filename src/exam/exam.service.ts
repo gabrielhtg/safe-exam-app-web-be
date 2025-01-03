@@ -4,7 +4,13 @@ import { Response } from 'express';
 import { PrismaService } from '../prisma.service';
 import * as path from 'node:path';
 import * as fs from 'node:fs';
-import { createCipheriv, randomBytes, scrypt } from 'node:crypto';
+import {
+  createCipheriv,
+  createDecipheriv,
+  createHash,
+  randomBytes,
+  scrypt,
+} from 'node:crypto';
 import { promisify } from 'node:util';
 
 @Injectable()
@@ -293,20 +299,21 @@ export class ExamService {
       fileName,
     );
 
-    const iv = randomBytes(16);
-    const password = examData.config_password;
+    const key = createHash('sha256')
+      .update(examData.config_password)
+      .digest()
+      .subarray(0, 32);
+    const iv = createHash('md5').update('ta12').digest();
 
-    const key = (await promisify(scrypt)(password, 'salt', 32)) as Buffer;
     const cipher = createCipheriv('aes-256-ctr', key, iv);
 
-    const textToEncrypt = JSON.stringify(fileData, null, 2);
+    const textToEncrypt = JSON.stringify(fileData);
     const encryptedText = Buffer.concat([
       cipher.update(textToEncrypt),
       cipher.final(),
     ]);
 
-    const encryptedFileData = Buffer.concat([iv, encryptedText]); // Prepend IV to encrypted data
-    fs.writeFileSync(filePath, encryptedFileData);
+    fs.writeFileSync(filePath, encryptedText);
 
     return res.status(200).json({
       message: 'success',
