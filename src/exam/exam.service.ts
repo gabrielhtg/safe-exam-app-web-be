@@ -251,6 +251,14 @@ export class ExamService {
       },
     });
 
+    if (examData.time_limit == 0 || examData.time_limit == null) {
+      return res.status(400).json({
+        message:
+          'Cannot be generated. Determine the time limit for taking this exam.',
+        data: null,
+      });
+    }
+
     const courseData = await this.prismaService.course.findUnique({
       where: {
         title: examData.course_title,
@@ -278,6 +286,14 @@ export class ExamService {
         },
       },
     });
+
+    if (questionsData.length === 0) {
+      return res.status(400).json({
+        message:
+          'Cannot be generated. Questions have not been added to this exam.',
+        data: null,
+      });
+    }
 
     const fileData = {
       examData,
