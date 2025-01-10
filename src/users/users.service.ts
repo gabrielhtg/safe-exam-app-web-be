@@ -104,7 +104,7 @@ export class UsersService {
         ),
         email: createuserDto.email,
         name: createuserDto.name,
-        profile_pict: `profile_pict/${file.filename}`,
+        profile_pict: file ? `profile_pict/${file.filename}` : null,
         created_at: new Date(),
       },
     });
