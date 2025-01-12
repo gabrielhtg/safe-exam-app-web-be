@@ -4,14 +4,7 @@ import { Response } from 'express';
 import { PrismaService } from '../prisma.service';
 import * as path from 'node:path';
 import * as fs from 'node:fs';
-import {
-  createCipheriv,
-  createDecipheriv,
-  createHash,
-  randomBytes,
-  scrypt,
-} from 'node:crypto';
-import { promisify } from 'node:util';
+import { createCipheriv, createHash } from 'node:crypto';
 
 @Injectable()
 export class ExamService {
@@ -27,7 +20,7 @@ export class ExamService {
         config_password: uuidv4(),
         description: createExamDto.description,
         created_by: createExamDto.created_by,
-        course_title: createExamDto.course_title,
+        course_id: createExamDto.course_id,
       },
     });
 
@@ -41,7 +34,7 @@ export class ExamService {
     sortBy: string,
     order: 'asc' | 'desc',
     take: number,
-    course: string,
+    course: number,
     search: string,
     uploader: string,
     res: Response,
@@ -53,8 +46,11 @@ export class ExamService {
           title: {
             startsWith: search,
           },
-          course_title: course,
+          course_id: course ? course : undefined,
           created_by: uploader,
+        },
+        include: {
+          course: true,
         },
         take: take > 0 ? take : undefined,
         orderBy: {
@@ -71,6 +67,9 @@ export class ExamService {
         data: await this.prismaService.exam.findUnique({
           where: {
             id: id,
+          },
+          include: {
+            course: true,
           },
         }),
       });
@@ -261,7 +260,7 @@ export class ExamService {
 
     const courseData = await this.prismaService.course.findUnique({
       where: {
-        title: examData.course_title,
+        id: examData.course_id,
       },
     });
 

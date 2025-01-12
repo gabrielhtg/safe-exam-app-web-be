@@ -26,7 +26,8 @@ model User {
 }
 
 model Course {
-  title       String     @id @unique @db.VarChar(60)
+  id          Int        @id @default(autoincrement())
+  title       String     @db.VarChar(60)
   description String     @db.Text
   image       String?
   created_at  DateTime   @default(now())
@@ -60,8 +61,8 @@ model Exam {
   enable_proctoring Boolean        @default(false)
   allowed_attempts  Int            @default(1)
   cheating_limit    Int            @default(5)
-  course            Course         @relation(fields: [course_title], references: [title])
-  course_title      String         @db.VarChar(60)
+  course            Course         @relation(fields: [course_id], references: [id])
+  course_id         Int
   user              User           @relation(fields: [created_by], references: [username])
   created_by        String         @db.VarChar(25)
   ExamResult        ExamResult[]
@@ -69,19 +70,19 @@ model Exam {
 }
 
 model Question {
-  id           Int            @id @default(autoincrement())
-  content      String         @db.LongText
-  type         String         @db.VarChar(50)
-  options      Json?          @db.Json
-  point        Decimal?
-  exams        ExamQuestion[]
-  course       Course         @relation(fields: [course_title], references: [title], onDelete: Cascade)
-  course_title String         @db.VarChar(60)
-  created_at   DateTime       @default(now())
-  updated_at   DateTime       @updatedAt
-  user         User           @relation(fields: [created_by], references: [username])
-  created_by   String         @db.VarChar(25)
-  ExamAnswer   ExamAnswer[]
+  id         Int            @id @default(autoincrement())
+  content    String         @db.LongText
+  type       String         @db.VarChar(50)
+  options    Json?          @db.Json
+  point      Decimal?
+  exams      ExamQuestion[]
+  course     Course         @relation(fields: [course_id], references: [id], onDelete: Cascade)
+  course_id  Int
+  created_at DateTime       @default(now())
+  updated_at DateTime       @updatedAt
+  user       User           @relation(fields: [created_by], references: [username])
+  created_by String         @db.VarChar(25)
+  ExamAnswer ExamAnswer[]
 }
 
 model ExamQuestion {

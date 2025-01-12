@@ -39,7 +39,7 @@ export class ExamController {
       sortBy,
       order,
       +take,
-      course,
+      +course,
       search,
       uploader,
       res,

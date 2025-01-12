@@ -13,8 +13,6 @@ import {
   Query,
 } from '@nestjs/common';
 import { CourseService } from './course.service';
-import { CreateCourseDto } from './dto/create-course.dto';
-import { UpdateCourseDto } from './dto/update-course.dto';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { uploadCoursePict } from '../multer.config';
 import { Response } from 'express';
@@ -29,7 +27,7 @@ export class CourseController {
   @UseInterceptors(FileInterceptor('course_pict', uploadCoursePict))
   async create(
     @UploadedFile() file: Express.Multer.File,
-    @Body() createCourseDto: CreateCourseDto,
+    @Body() createCourseDto: any,
     @Res() response: Response,
   ) {
     return this.courseService.create(createCourseDto, file, response);
@@ -58,7 +56,7 @@ export class CourseController {
   @UseGuards(AuthGuard)
   @Get(':id')
   async findOne(@Param('id') id: string, @Res() res: Response) {
-    return this.courseService.findOne(id, res);
+    return this.courseService.findOne(+id, res);
   }
 
   @UseGuards(AuthGuard)
@@ -67,7 +65,7 @@ export class CourseController {
   async update(
     @UploadedFile() file: Express.Multer.File,
     @Body()
-    updateCourseDto: UpdateCourseDto,
+    updateCourseDto: any,
     @Res() res: Response,
   ) {
     return this.courseService.update(updateCourseDto, res, file);
@@ -76,6 +74,6 @@ export class CourseController {
   @UseGuards(AuthGuard)
   @Delete(':id')
   async remove(@Param('id') id: string, @Res() res: Response) {
-    return this.courseService.remove(id, res);
+    return this.courseService.remove(+id, res);
   }
 }

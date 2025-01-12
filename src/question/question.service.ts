@@ -14,7 +14,7 @@ export class QuestionService {
         type: data.type,
         point: data.remarks,
         created_by: data.created_by,
-        course_title: data.course,
+        course_id: data.course,
       },
     });
 
@@ -53,7 +53,7 @@ export class QuestionService {
     take: number,
     search: string,
     exam: number,
-    course: string,
+    course_id: number,
     uploader: string,
     res: Response,
   ) {
@@ -63,7 +63,7 @@ export class QuestionService {
           contains: search,
         },
         created_by: uploader,
-        course_title: course,
+        course_id: course_id ? course_id : undefined,
         exams: {
           every: {
             examId: exam ? exam : undefined,
@@ -108,9 +108,10 @@ export class QuestionService {
     return `This action returns a #${id} question`;
   }
 
-  async update(id: number, updateData: any, res: Response) {
+  async update() {
     return false;
   }
+
   async remove(id: number, res: Response) {
     const removeData = await this.prismaService.question.delete({
       where: {

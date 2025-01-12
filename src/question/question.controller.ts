@@ -38,7 +38,7 @@ export class QuestionController {
       +take,
       search,
       +exam,
-      course,
+      +course,
       uploader,
       res,
     );
