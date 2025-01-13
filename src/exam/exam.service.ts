@@ -11,6 +11,7 @@ export class ExamService {
   constructor(private prismaService: PrismaService) {}
 
   async create(createExamDto: any, res: Response) {
+    console.log(createExamDto);
     const createData = await this.prismaService.exam.create({
       data: {
         title: createExamDto.title,
@@ -20,7 +21,7 @@ export class ExamService {
         config_password: uuidv4(),
         description: createExamDto.description,
         created_by: createExamDto.created_by,
-        course_id: createExamDto.course_id,
+        course_id: +createExamDto.course_id,
       },
     });
 
