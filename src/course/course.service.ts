@@ -1,6 +1,7 @@
 import { HttpStatus, Injectable } from '@nestjs/common';
 import { PrismaService } from '../prisma.service';
 import { Response } from 'express';
+import { v4 as uuidv4 } from 'uuid';
 
 @Injectable()
 export class CourseService {
@@ -14,6 +15,7 @@ export class CourseService {
         description: createCourseDto.description,
         image: file ? `course_pict/${file.filename}` : null,
         created_by: createCourseDto.username,
+        enroll_key: uuidv4(),
       },
     });
 
@@ -112,6 +114,22 @@ export class CourseService {
     return res.status(HttpStatus.OK).json({
       message: 'Deleted Successfully!',
       data: removeData,
+    });
+  }
+
+  async generateNewToken(courseId: number, res: Response) {
+    const updateDAta = await this.prismaService.course.update({
+      where: {
+        id: courseId,
+      },
+      data: {
+        enroll_key: uuidv4(),
+      },
+    });
+
+    return res.status(200).json({
+      message: 'New token generated successfully!',
+      data: updateDAta,
     });
   }
 }

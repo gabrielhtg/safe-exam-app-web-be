@@ -18,7 +18,6 @@ export class ExamService {
         start_date: createExamDto.start_date,
         end_date: createExamDto.end_date,
         config_password: uuidv4(),
-        allowed_user_token: uuidv4(),
         description: createExamDto.description,
         created_by: createExamDto.created_by,
         course_id: createExamDto.course_id,
@@ -273,7 +272,7 @@ export class ExamService {
 
     const allowedUserData = await this.prismaService.allowedStudent.findMany({
       where: {
-        exam_id: examId,
+        course_id: courseData.id,
       },
     });
 

@@ -7,33 +7,49 @@ export class AllowedStudentService {
   constructor(private prismaService: PrismaService) {}
 
   async create(createAllowedStudentDto: any, res: Response) {
-    const examData = await this.prismaService.exam.findUnique({
+    const courseData = await this.prismaService.course.findUnique({
       where: {
-        id: createAllowedStudentDto.exam_id,
+        id: +createAllowedStudentDto.course_id,
       },
     });
 
-    const createData = await this.prismaService.allowedStudent.create({
-      data: {
-        nim: createAllowedStudentDto.nim,
-        name: createAllowedStudentDto.name,
-        exam_id: examData.id,
-        device_id: createAllowedStudentDto.device_id,
-      },
-    });
+    if (courseData) {
+      if (courseData.enroll_key === createAllowedStudentDto.enroll_key) {
+        const createData = await this.prismaService.allowedStudent.create({
+          data: {
+            nim: createAllowedStudentDto.nim,
+            name: createAllowedStudentDto.name,
+            course_id: courseData.id,
+            device_id: createAllowedStudentDto.device_id,
+          },
+        });
 
-    return res.status(200).json({
-      message: 'Allowed Student created successfully.',
-      data: createData,
-    });
+        return res.status(200).json({
+          message: 'Allowed Student created successfully.',
+          data: createData,
+        });
+      } else {
+        return res.status(400).json({
+          message: 'Wrong enroll key.',
+          data: null,
+        });
+      }
+    } else {
+      return res.status(400).json({
+        message: 'Course not found',
+        data: null,
+      });
+    }
   }
 
-  async findAll(examId: number, res: Response) {
+  async findAll(courseId: number, res: Response) {
     const allowedUserData = await this.prismaService.allowedStudent.findMany({
       where: {
-        exam_id: examId,
+        course_id: courseId,
       },
     });
+
+    console.log(allowedUserData);
 
     if (allowedUserData) {
       return res.status(200).json({

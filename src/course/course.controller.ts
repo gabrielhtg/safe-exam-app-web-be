@@ -76,4 +76,10 @@ export class CourseController {
   async remove(@Param('id') id: string, @Res() res: Response) {
     return this.courseService.remove(+id, res);
   }
+
+  @UseGuards(AuthGuard)
+  @Post('generate-new-token')
+  async generateNewToken(@Body() courseData: any, @Res() res: Response) {
+    return this.courseService.generateNewToken(+courseData.id, res);
+  }
 }

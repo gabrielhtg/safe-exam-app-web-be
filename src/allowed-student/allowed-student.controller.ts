@@ -3,7 +3,6 @@ import {
   Get,
   Post,
   Body,
-  Patch,
   Param,
   Delete,
   Res,
@@ -25,8 +24,8 @@ export class AllowedStudentController {
 
   @UseGuards(AuthGuard)
   @Get()
-  findAll(@Query('exam_id') examId: string, @Res() res: Response) {
-    return this.allowedStudentService.findAll(+examId, res);
+  findAll(@Query('course_id') courseId: string, @Res() res: Response) {
+    return this.allowedStudentService.findAll(+courseId, res);
   }
 
   @UseGuards(AuthGuard)
