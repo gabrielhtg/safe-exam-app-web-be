@@ -108,7 +108,7 @@ export class QuestionService {
     return `This action returns a #${id} question`;
   }
 
-  async update() {
+  async update(id: number, updateData: any, res: Response) {
     return false;
   }
 
