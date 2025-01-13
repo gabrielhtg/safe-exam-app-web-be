@@ -103,6 +103,11 @@ export class UsersService {
           createuserDto.password,
         ),
         email: createuserDto.email,
+        role:
+          createuserDto.username === 'admin' ||
+          createuserDto.username === 'gabriel'
+            ? 'ADMIN'
+            : 'USER',
         name: createuserDto.name,
         profile_pict: file ? `profile_pict/${file.filename}` : null,
         created_at: new Date(),

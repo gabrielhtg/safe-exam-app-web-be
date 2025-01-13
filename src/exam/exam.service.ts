@@ -11,7 +11,6 @@ export class ExamService {
   constructor(private prismaService: PrismaService) {}
 
   async create(createExamDto: any, res: Response) {
-    console.log(createExamDto);
     const createData = await this.prismaService.exam.create({
       data: {
         title: createExamDto.title,

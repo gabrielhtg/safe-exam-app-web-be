@@ -8,7 +8,6 @@ export class CourseService {
   constructor(private prismaService: PrismaService) {}
 
   async create(createCourseDto: any, file: Express.Multer.File, res: Response) {
-    console.log(file);
     const createResult = await this.prismaService.course.create({
       data: {
         title: createCourseDto.title,
