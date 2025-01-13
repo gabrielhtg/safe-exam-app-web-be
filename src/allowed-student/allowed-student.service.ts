@@ -13,21 +13,35 @@ export class AllowedStudentService {
       },
     });
 
+    const beforeUser = await this.prismaService.allowedStudent.findMany({
+      where: {
+        nim: createAllowedStudentDto.nim,
+        course_id: courseData.id,
+      },
+    });
+
     if (courseData) {
       if (courseData.enroll_key === createAllowedStudentDto.enroll_key) {
-        const createData = await this.prismaService.allowedStudent.create({
-          data: {
-            nim: createAllowedStudentDto.nim,
-            name: createAllowedStudentDto.name,
-            course_id: courseData.id,
-            device_id: createAllowedStudentDto.device_id,
-          },
-        });
+        if (beforeUser.length < 1) {
+          const createData = await this.prismaService.allowedStudent.create({
+            data: {
+              nim: createAllowedStudentDto.nim,
+              name: createAllowedStudentDto.name,
+              course_id: courseData.id,
+              device_id: createAllowedStudentDto.device_id,
+            },
+          });
 
-        return res.status(200).json({
-          message: 'Allowed Student created successfully.',
-          data: createData,
-        });
+          return res.status(200).json({
+            message: 'Allowed Student created successfully.',
+            data: createData,
+          });
+        } else {
+          return res.status(200).json({
+            message: `NIM ${createAllowedStudentDto.nim} already enrolled to this Course`,
+            data: null,
+          });
+        }
       } else {
         return res.status(400).json({
           message: 'Wrong enroll key.',
@@ -48,8 +62,6 @@ export class AllowedStudentService {
         course_id: courseId,
       },
     });
-
-    console.log(allowedUserData);
 
     if (allowedUserData) {
       return res.status(200).json({
