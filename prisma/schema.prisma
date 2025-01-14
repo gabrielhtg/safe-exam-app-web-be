@@ -46,7 +46,7 @@ model Exam {
   title             String         @db.VarChar(255)
   created_at        DateTime       @default(now())
   updated_at        DateTime       @updatedAt
-  start_password    String         @db.VarChar(100)
+  start_password    String?        @db.VarChar(100)
   end_password      String?        @db.VarChar(100)
   config_password   String?        @db.VarChar(100)
   start_date        DateTime?
