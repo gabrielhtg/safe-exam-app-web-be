@@ -17,7 +17,6 @@ model User {
   login_ip     String?
   role         user_role    @default(USER)
   last_login   DateTime?
-  is_locked    Boolean      @default(false)
   profile_pict String?
   course       Course[]
   exam         Exam[]
