@@ -19,7 +19,7 @@ export class UsersService {
     });
 
     if (user) {
-      const { password, login_ip, updated_at, is_locked, ...data } = user;
+      const { password, login_ip, updated_at, ...data } = user;
 
       return res.status(HttpStatus.OK).json({
         message: 'Success',

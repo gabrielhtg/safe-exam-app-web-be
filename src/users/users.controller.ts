@@ -53,7 +53,7 @@ export class UsersController {
     try {
       const createdUser = await this.usersService.create(createuserDto, file);
 
-      const { password, login_ip, created_at, updated_at, is_locked, ...data } =
+      const { password, login_ip, created_at, updated_at, ...data } =
         createdUser;
 
       if (createdUser) {
