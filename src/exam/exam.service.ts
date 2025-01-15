@@ -95,9 +95,7 @@ export class ExamService {
           end_password: updateData.end_password
             ? updateData.end_password
             : undefined,
-          config_password: updateData.config_password
-            ? updateData.config_password
-            : undefined,
+          config_password: updateData.config_password ? uuidv4() : undefined,
           start_date: updateData.start_date ? updateData.start_date : undefined,
           end_date: updateData.end_date ? updateData.end_date : undefined,
           sequential: updateData.sequential ? updateData.sequential : undefined,
@@ -126,7 +124,7 @@ export class ExamService {
           allowed_attempts: updateData.allowed_attemps
             ? updateData.allowed_attemps
             : undefined,
-          time_limit: updateData.time_limit,
+          time_limit: updateData.time_limit ? updateData.time_limit : undefined,
         },
       });
 
@@ -247,6 +245,9 @@ export class ExamService {
     const examData = await this.prismaService.exam.findUnique({
       where: {
         id: examId,
+      },
+      include: {
+        course: true,
       },
     });
 

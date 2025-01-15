@@ -10,6 +10,7 @@ import { ExamModule } from './exam/exam.module';
 import { QuestionModule } from './question/question.module';
 import { ExamResultModule } from './exam-result/exam-result.module';
 import { AllowedStudentModule } from './allowed-student/allowed-student.module';
+import { ExamConfigModule } from './exam-config/exam-config.module';
 
 @Module({
   imports: [
@@ -23,6 +24,7 @@ import { AllowedStudentModule } from './allowed-student/allowed-student.module';
     QuestionModule,
     ExamResultModule,
     AllowedStudentModule,
+    ExamConfigModule,
   ],
   controllers: [AppController],
   providers: [AppService],

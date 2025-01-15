@@ -33,7 +33,7 @@ export class AllowedStudentService {
           });
 
           return res.status(200).json({
-            message: 'Allowed Student created successfully.',
+            message: 'Enrolled successfully.',
             data: createData,
           });
         } else {
@@ -56,10 +56,36 @@ export class AllowedStudentService {
     }
   }
 
-  async findAll(courseId: number, res: Response) {
+  async findAll(
+    sortBy: string,
+    orderBy: 'asc' | 'desc',
+    take: string,
+    search: string,
+    courseId: number,
+    res: Response,
+  ) {
     const allowedUserData = await this.prismaService.allowedStudent.findMany({
       where: {
         course_id: courseId,
+        ...(search
+          ? {
+              OR: [
+                {
+                  name: {
+                    contains: search,
+                  },
+                },
+                {
+                  nim: {
+                    contains: search,
+                  },
+                },
+              ],
+            }
+          : {}),
+      },
+      orderBy: {
+        nim: 'asc',
       },
     });
 

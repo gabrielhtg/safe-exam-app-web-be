@@ -24,8 +24,22 @@ export class AllowedStudentController {
 
   @UseGuards(AuthGuard)
   @Get()
-  findAll(@Query('course_id') courseId: string, @Res() res: Response) {
-    return this.allowedStudentService.findAll(+courseId, res);
+  findAll(
+    @Query('sortBy') sortBy: string,
+    @Query('orderBy') order: 'asc' | 'desc',
+    @Query('take') take: string,
+    @Query('search') search: string,
+    @Query('course_id') courseId: string,
+    @Res() res: Response,
+  ) {
+    return this.allowedStudentService.findAll(
+      sortBy,
+      order,
+      take,
+      search,
+      +courseId,
+      res,
+    );
   }
 
   @UseGuards(AuthGuard)
