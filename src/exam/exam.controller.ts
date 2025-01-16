@@ -74,7 +74,7 @@ export class ExamController {
     return this.examService.remove(+id, res);
   }
 
-  @UseGuards(AuthGuard)
+  // @UseGuards(AuthGuard)
   @Post('submit')
   async submit(@Body() submitData: any, @Res() res: Response) {
     return this.examService.submit(submitData, res);

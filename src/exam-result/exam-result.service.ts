@@ -6,14 +6,9 @@ import { PrismaService } from '../prisma.service';
 export class ExamResultService {
   constructor(private prismaService: PrismaService) {}
 
-  create(createExamResultDto: any) {
-    return 'This action adds a new examResult';
-  }
-
-  async findAll(username: string, exam_id: number, res: Response) {
+  async findAll(exam_id: number, res: Response) {
     const findAllData = await this.prismaService.examResult.findMany({
       where: {
-        user_username: username,
         exam_id: +exam_id,
       },
     });
@@ -45,9 +40,9 @@ export class ExamResultService {
     });
   }
 
-  update(id: number, updateExamResultDto: any) {
-    return `This action updates a #${id} examResult`;
-  }
+  // update(id: number, updateExamResultDto: any) {
+  //   return `This action updates a #${id} examResult`;
+  // }
 
   remove(id: number) {
     return `This action removes a #${id} examResult`;

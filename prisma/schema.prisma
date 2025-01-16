@@ -8,20 +8,19 @@ datasource db {
 }
 
 model User {
-  created_at   DateTime     @default(now())
-  email        String       @unique(map: "User_email_key") @db.VarChar(100)
-  name         String?      @db.VarChar(100)
-  username     String       @id @unique(map: "User_username_key") @db.VarChar(25)
+  created_at   DateTime   @default(now())
+  email        String     @unique(map: "User_email_key") @db.VarChar(100)
+  name         String?    @db.VarChar(100)
+  username     String     @id @unique(map: "User_username_key") @db.VarChar(25)
   password     String
-  updated_at   DateTime     @updatedAt
+  updated_at   DateTime   @updatedAt
   login_ip     String?
-  role         user_role    @default(USER)
+  role         user_role  @default(USER)
   last_login   DateTime?
   profile_pict String?
   course       Course[]
   exam         Exam[]
   question     Question[]
-  ExamResult   ExamResult[]
 }
 
 model Course {
@@ -108,14 +107,13 @@ model ExamResult {
   id             Int          @id @default(autoincrement())
   exam           Exam         @relation(fields: [exam_id], references: [id])
   exam_id        Int
-  user           User         @relation(fields: [user_username], references: [username])
-  user_username  String       @db.VarChar(25)
   total_score    Decimal?     @default(0)
   expected_score Decimal?     @default(0)
   attempt        Int          @default(0)
   created_at     DateTime     @default(now())
   updated_at     DateTime     @updatedAt
   answers        ExamAnswer[]
+  user_username  String       @db.VarChar(25)
 }
 
 model ExamAnswer {

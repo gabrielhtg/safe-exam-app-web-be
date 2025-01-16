@@ -2,6 +2,8 @@ import { Injectable } from '@nestjs/common';
 import { PrismaService } from '../prisma.service';
 import { Response } from 'express';
 import { createCipheriv, createHash } from 'node:crypto';
+import * as path from 'node:path';
+import * as fs from 'node:fs';
 
 @Injectable()
 export class ExamConfigService {
@@ -17,7 +19,7 @@ export class ExamConfigService {
       },
     });
 
-    if (examData.time_limit === 0 || examData.time_limit === null) {
+    if (examData.time_limit == 0 || examData.time_limit == null) {
       return res.status(400).json({
         message:
           'Cannot be generated. Determine the time limit for taking this exam.',
@@ -73,6 +75,13 @@ export class ExamConfigService {
       ' ',
       '_',
     );
+    const filePath = path.join(
+      __dirname,
+      '..',
+      '..',
+      'public/exam_config_file',
+      fileName,
+    );
 
     const key = createHash('sha256')
       .update(examData.config_password)
@@ -87,6 +96,8 @@ export class ExamConfigService {
       cipher.update(textToEncrypt),
       cipher.final(),
     ]);
+
+    fs.writeFileSync(filePath, encryptedText);
 
     res.setHeader('Content-Disposition', `attachment; filename="${fileName}"`);
     res.setHeader('Content-Type', 'application/octet-stream');

@@ -1,4 +1,4 @@
-import { Controller, Get, Param, Query, Res } from '@nestjs/common';
+import { Controller, Get, Param, Res } from '@nestjs/common';
 import { ExamConfigService } from './exam-config.service';
 import { Response } from 'express';
 
@@ -8,7 +8,6 @@ export class ExamConfigController {
 
   @Get(':id')
   async get(@Param('id') examId: string, @Res() res: Response) {
-    console.log('mama');
     return this.examConfigService.downloadExamConfig(+examId, res);
   }
 }

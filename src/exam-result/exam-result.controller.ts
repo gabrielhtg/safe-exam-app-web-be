@@ -25,12 +25,8 @@ export class ExamResultController {
 
   @UseGuards(AuthGuard)
   @Get()
-  findAll(
-    @Query('username') username: string,
-    @Query('exam') exam_id: number,
-    @Res() res: Response,
-  ) {
-    return this.examResultService.findAll(username, exam_id, res);
+  findAll(@Query('exam') exam_id: number, @Res() res: Response) {
+    return this.examResultService.findAll(exam_id, res);
   }
 
   @UseGuards(AuthGuard)

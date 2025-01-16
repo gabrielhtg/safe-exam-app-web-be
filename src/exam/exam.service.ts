@@ -157,6 +157,8 @@ export class ExamService {
     let tempScore = 0;
     let correctQuestion = {};
 
+    console.log(answerData);
+
     questionsData.forEach((question: any) => {
       if (question.type === 'multiple') {
         question.options.forEach((option: any) => {
