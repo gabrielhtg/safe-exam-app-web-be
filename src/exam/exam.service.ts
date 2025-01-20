@@ -157,8 +157,6 @@ export class ExamService {
     let tempScore = 0;
     let correctQuestion = {};
 
-    console.log(answerData);
-
     questionsData.forEach((question: any) => {
       if (question.type === 'multiple') {
         question.options.forEach((option: any) => {
@@ -238,7 +236,7 @@ export class ExamService {
     }
 
     return res.status(HttpStatus.OK).json({
-      message: `Exam submission successfully!. Point ${tempScore} from ${tempTotalScore}. Grade ${(tempScore / tempTotalScore) * 100}`,
+      message: `Exam submission successfully!`,
       data: createExamResultData,
     });
   }
