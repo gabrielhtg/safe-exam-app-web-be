@@ -47,7 +47,7 @@ export class AllowedStudentService {
             });
           } else {
             return res.status(400).json({
-              message: `Device ID ${createAllowedStudentDto.nim} already enrolled to this Course`,
+              message: `Device ID already enrolled to this Course`,
               data: null,
             });
           }
