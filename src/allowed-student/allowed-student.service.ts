@@ -23,7 +23,7 @@ export class AllowedStudentService {
     const beforeUserByDeviceId =
       await this.prismaService.allowedStudent.findMany({
         where: {
-          device_id: createAllowedStudentDto.nim,
+          device_id: createAllowedStudentDto.device_id,
           course_id: courseData.id,
         },
       });
