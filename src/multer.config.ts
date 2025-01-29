@@ -29,3 +29,17 @@ export const uploadCoursePict = {
     fileSize: 5 * 1024 * 1024,
   },
 };
+
+export const uploadResultFile = {
+  storage: diskStorage({
+    destination: join(__dirname, '..', 'public/exam_result_file'),
+    filename: (req, file, callback) => {
+      const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1e9);
+      const filename = `${file.originalname.split('.')[0]}-${uniqueSuffix}.${file.originalname.split('.')[1]}`;
+      callback(null, filename);
+    },
+  }),
+  limits: {
+    fileSize: 5 * 1024 * 1024,
+  },
+};

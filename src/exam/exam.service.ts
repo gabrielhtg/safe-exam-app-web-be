@@ -5,10 +5,17 @@ import { PrismaService } from '../prisma.service';
 import * as path from 'node:path';
 import * as fs from 'node:fs';
 import { createCipheriv, createHash } from 'node:crypto';
+import { exec } from 'node:child_process';
+import * as process from 'node:process';
+import { JsonService } from './json.service';
+import * as util from 'node:util';
 
 @Injectable()
 export class ExamService {
-  constructor(private prismaService: PrismaService) {}
+  constructor(
+    private prismaService: PrismaService,
+    private jsonService: JsonService,
+  ) {}
 
   async create(createExamDto: any, res: Response) {
     const createData = await this.prismaService.exam.create({
@@ -148,97 +155,155 @@ export class ExamService {
     });
   }
 
-  async submit(submitData: any, res: Response) {
-    const username = submitData.username;
-    const examData = submitData.exam;
-    const answerData = submitData.answer;
-    const questionsData = submitData.questions;
-    let tempTotalScore = 0;
-    let tempScore = 0;
-    let correctQuestion = {};
+  async submit(resultFile: Express.Multer.File, res: Response) {
+    const execPromise = util.promisify(exec);
 
-    questionsData.forEach((question: any) => {
-      if (question.type === 'multiple') {
-        question.options.forEach((option: any) => {
-          if (option.id === answerData[question.id] && option.isCorrect) {
-            tempScore = tempScore + +question.point;
-            correctQuestion = {
-              ...correctQuestion,
-              [question.id]: +question.point,
-            };
-          }
-        });
-      } else if (question.type === 'check-box') {
-        question.options.forEach((option: any) => {
-          if (+option.id.split('.')[0] === question.id) {
-            try {
-              answerData[question.id].forEach((answer: any) => {
-                if (answer === option.id && option.isCorrect) {
-                  tempScore =
-                    tempScore +
-                    (1 /
-                      question.options.filter((tmp: any) => tmp.isCorrect)
-                        .length) *
-                      question.point;
+    const sevenZipPath = path.join(process.cwd(), '7z-linux', '7zz');
+    const outputPath = path.join(
+      process.cwd(),
+      'public',
+      'exam_result_file_extracted',
+      resultFile.filename.split('.')[0].replaceAll(' ', '_'),
+    );
 
-                  correctQuestion = {
-                    ...correctQuestion,
-                    [question.id]:
-                      (correctQuestion[question.id]
-                        ? correctQuestion[question.id]
-                        : 0) +
+    try {
+      await execPromise(
+        `${sevenZipPath} x "${resultFile.path}" -ptest -o"${outputPath}"`,
+      );
+
+      const jsonData = this.jsonService.readJsonFile(
+        path.join(outputPath, 'data.json'),
+      );
+
+      const username = jsonData.username;
+      const examData = jsonData.exam;
+      const answerData = jsonData.answer;
+      const questionsData = jsonData.questions;
+      let tempTotalScore = 0;
+      let tempScore = 0;
+      let correctQuestion = {};
+      const proctoringData = jsonData.proctoringLog;
+
+      // fs.readdir(outputPath, (err, files) => {
+      //   if (err) {
+      //     console.error('Error reading directory:', err.message);
+      //     return;
+      //   }
+      //   imageFile = files;
+      //
+      //   console.log(files);
+      //
+      //
+      // });
+
+      questionsData.forEach((question: any) => {
+        if (question.type === 'multiple') {
+          question.options.forEach((option: any) => {
+            if (option.id === answerData[question.id] && option.isCorrect) {
+              tempScore = tempScore + +question.point;
+              correctQuestion = {
+                ...correctQuestion,
+                [question.id]: +question.point,
+              };
+            }
+          });
+        } else if (question.type === 'check-box') {
+          question.options.forEach((option: any) => {
+            if (+option.id.split('.')[0] === question.id) {
+              try {
+                answerData[question.id].forEach((answer: any) => {
+                  if (answer === option.id && option.isCorrect) {
+                    tempScore =
+                      tempScore +
                       (1 /
                         question.options.filter((tmp: any) => tmp.isCorrect)
                           .length) *
-                        question.point,
-                  };
-                }
-              });
-            } catch (e: any) {
-              return;
+                        question.point;
+
+                    correctQuestion = {
+                      ...correctQuestion,
+                      [question.id]:
+                        (correctQuestion[question.id]
+                          ? correctQuestion[question.id]
+                          : 0) +
+                        (1 /
+                          question.options.filter((tmp: any) => tmp.isCorrect)
+                            .length) *
+                          question.point,
+                    };
+                  }
+                });
+              } catch (e: any) {
+                return;
+              }
             }
-          }
-        });
-      } else {
-        // console.log(answerData[question.id]);
-      }
+          });
+        } else {
+          // console.log(answerData[question.id]);
+        }
 
-      tempTotalScore = tempTotalScore + +question.point;
-    });
+        tempTotalScore = tempTotalScore + +question.point;
+      });
 
-    const getExamResultData = await this.prismaService.examResult.findMany({
-      where: {
-        exam_id: examData.id,
-        user_username: username,
-      },
-    });
-
-    const createExamResultData = await this.prismaService.examResult.create({
-      data: {
-        exam_id: examData.id,
-        user_username: username,
-        total_score: tempScore,
-        expected_score: tempTotalScore,
-        attempt: getExamResultData.length + 1,
-      },
-    });
-
-    for (let i = 0; i < questionsData.length; i++) {
-      await this.prismaService.examAnswer.create({
-        data: {
-          result_id: createExamResultData.id,
-          question_id: questionsData[i].id,
-          answer: answerData[questionsData[i].id],
-          is_correct: !!correctQuestion[questionsData[i].id],
-          score: correctQuestion[questionsData[i].id],
+      const getExamResultData = await this.prismaService.examResult.findMany({
+        where: {
+          exam_id: examData.id,
+          user_username: username,
         },
       });
-    }
 
-    return res.status(HttpStatus.OK).json({
-      message: `Exam submission successfully!`,
-      data: createExamResultData,
-    });
+      const createExamResultData = await this.prismaService.examResult.create({
+        data: {
+          exam_id: examData.id,
+          user_username: username,
+          total_score: tempScore,
+          expected_score: tempTotalScore,
+          attempt: getExamResultData.length + 1,
+        },
+      });
+
+      for (let i = 0; i < proctoringData.length; i++) {
+        await this.prismaService.proctoringLog.create({
+          data: {
+            description: proctoringData[i].description,
+            time: proctoringData[i].time,
+            user_image:
+              `exam_result_file_extracted/${resultFile.filename.split('.')[0]}/g_${proctoringData[i].image_id}.jpeg`.replaceAll(
+                ' ',
+                '_',
+              ),
+            screen_image:
+              `exam_result_file_extracted/${resultFile.filename.split('.')[0]}/s_${proctoringData[i].image_id}.png`.replaceAll(
+                ' ',
+                '_',
+              ),
+            exam_result_id: createExamResultData.id,
+          },
+        });
+      }
+
+      for (let i = 0; i < questionsData.length; i++) {
+        await this.prismaService.examAnswer.create({
+          data: {
+            result_id: createExamResultData.id,
+            question_id: questionsData[i].id,
+            answer: answerData[questionsData[i].id],
+            is_correct: !!correctQuestion[questionsData[i].id],
+            score: correctQuestion[questionsData[i].id],
+          },
+        });
+      }
+
+      return res.status(HttpStatus.OK).json({
+        message: `Exam submission successfully!`,
+        // data: createExamResultData,
+      });
+    } catch (error) {
+      return res.status(HttpStatus.BAD_REQUEST).json({
+        message: `Exam submission failed!`,
+        // data: createExamResultData,
+      });
+    }
   }
 
   async generateExamFile(examId: number, res: Response) {

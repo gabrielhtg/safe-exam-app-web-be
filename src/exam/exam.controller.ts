@@ -9,10 +9,14 @@ import {
   Res,
   UseGuards,
   Query,
+  UseInterceptors,
+  UploadedFile,
 } from '@nestjs/common';
 import { ExamService } from './exam.service';
 import { Response } from 'express';
 import { AuthGuard } from '../auth/auth.guard';
+import { FileInterceptor } from '@nestjs/platform-express';
+import { uploadResultFile } from '../multer.config';
 
 @Controller('exam')
 export class ExamController {
@@ -75,8 +79,12 @@ export class ExamController {
   }
 
   // @UseGuards(AuthGuard)
+  @UseInterceptors(FileInterceptor('result_file', uploadResultFile))
   @Post('submit')
-  async submit(@Body() submitData: any, @Res() res: Response) {
-    return this.examService.submit(submitData, res);
+  async submit(
+    @UploadedFile() file: Express.Multer.File,
+    @Res() res: Response,
+  ) {
+    return this.examService.submit(file, res);
   }
 }

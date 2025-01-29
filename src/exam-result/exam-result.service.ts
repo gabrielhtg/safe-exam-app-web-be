@@ -31,6 +31,7 @@ export class ExamResultService {
           },
         },
         exam: true,
+        proctoring_logs: true,
       },
     });
 

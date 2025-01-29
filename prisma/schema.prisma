@@ -104,16 +104,28 @@ model ExamQuestion {
 }
 
 model ExamResult {
-  id             Int          @id @default(autoincrement())
-  exam           Exam         @relation(fields: [exam_id], references: [id])
-  exam_id        Int
-  total_score    Decimal?     @default(0)
-  expected_score Decimal?     @default(0)
-  attempt        Int          @default(0)
-  created_at     DateTime     @default(now())
-  updated_at     DateTime     @updatedAt
-  answers        ExamAnswer[]
-  user_username  String       @db.VarChar(25)
+  id                 Int             @id @default(autoincrement())
+  exam               Exam            @relation(fields: [exam_id], references: [id])
+  exam_id            Int
+  total_score        Decimal?        @default(0)
+  expected_score     Decimal?        @default(0)
+  attempt            Int             @default(0)
+  created_at         DateTime        @default(now())
+  updated_at         DateTime        @updatedAt
+  answers            ExamAnswer[]
+  user_username      String          @db.VarChar(25)
+  indicated_cheating Boolean         @default(false)
+  proctoring_logs    ProctoringLog[]
+}
+
+model ProctoringLog {
+  id             Int        @id @default(autoincrement())
+  description    String     @db.VarChar(255)
+  user_image     String     @db.VarChar(255)
+  screen_image   String     @db.VarChar(255)
+  time           DateTime   @default(now())
+  exam_result    ExamResult @relation(fields: [exam_result_id], references: [id], onDelete: Cascade)
+  exam_result_id Int
 }
 
 model ExamAnswer {
