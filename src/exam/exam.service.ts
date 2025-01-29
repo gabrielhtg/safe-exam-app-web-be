@@ -259,6 +259,8 @@ export class ExamService {
           total_score: tempScore,
           expected_score: tempTotalScore,
           attempt: getExamResultData.length + 1,
+          indicated_cheating:
+            proctoringData.length >= jsonData.exam.cheating_limit,
         },
       });
 
