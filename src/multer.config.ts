@@ -40,6 +40,6 @@ export const uploadResultFile = {
     },
   }),
   limits: {
-    fileSize: 5 * 1024 * 1024,
+    fileSize: 500 * 1024 * 1024,
   },
 };

@@ -65,9 +65,16 @@ export class UsersController {
     } catch (err) {
       if (err instanceof PrismaClientKnownRequestError) {
         if (err.code === 'P2002') {
-          return res.status(HttpStatus.BAD_REQUEST).json({
-            message: `Unique constraint violation: ${createuserDto.username} already exists`,
-          });
+          console.log(err.meta.target);
+          if (String(err.meta.target).includes('email')) {
+            return res.status(HttpStatus.BAD_REQUEST).json({
+              message: `Unique constraint violation: ${createuserDto.email} already exists`,
+            });
+          } else {
+            return res.status(HttpStatus.BAD_REQUEST).json({
+              message: `Unique constraint violation: ${createuserDto.username} already exists`,
+            });
+          }
         }
       }
     }

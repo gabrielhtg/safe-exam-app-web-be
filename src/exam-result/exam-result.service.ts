@@ -42,7 +42,7 @@ export class ExamResultService {
   }
 
   // update(id: number, updateExamResultDto: any) {
-  //   return `This action updates a #${id} examResult`;
+  //   return  `This action updates a #${id} examResult`;
   // }
 
   remove(id: number) {

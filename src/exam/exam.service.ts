@@ -158,6 +158,8 @@ export class ExamService {
   async submit(resultFile: Express.Multer.File, res: Response) {
     const execPromise = util.promisify(exec);
 
+    console.log(resultFile);
+
     const sevenZipPath = path.join(process.cwd(), '7z-linux', '7zz');
     const outputPath = path.join(
       process.cwd(),
