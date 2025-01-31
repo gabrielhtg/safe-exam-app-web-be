@@ -160,9 +160,9 @@ export class ExamService {
     const execPromise = util.promisify(exec);
     let sevenZipPath: string;
     if (os.platform() === 'win32') {
-      sevenZipPath = path.join(process.cwd(), '7z-linux', '7zz');
-    } else {
       sevenZipPath = path.join(process.cwd(), '7z-win', '7zr.exe');
+    } else {
+      sevenZipPath = path.join(process.cwd(), '7z-linux', '7zz');
     }
     const outputPath = path.join(
       process.cwd(),
@@ -306,6 +306,7 @@ export class ExamService {
         // data: createExamResultData,
       });
     } catch (error) {
+      console.log(error);
       return res.status(HttpStatus.BAD_REQUEST).json({
         message: `Exam submission failed!`,
         // data: createExamResultData,
