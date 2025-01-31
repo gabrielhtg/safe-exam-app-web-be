@@ -9,6 +9,7 @@ import { exec } from 'node:child_process';
 import * as process from 'node:process';
 import { JsonService } from './json.service';
 import * as util from 'node:util';
+import * as os from 'node:os';
 
 @Injectable()
 export class ExamService {
@@ -157,8 +158,12 @@ export class ExamService {
 
   async submit(resultFile: Express.Multer.File, res: Response) {
     const execPromise = util.promisify(exec);
-
-    const sevenZipPath = path.join(process.cwd(), '7z-linux', '7zz');
+    let sevenZipPath: string;
+    if (os.platform() === 'win32') {
+      sevenZipPath = path.join(process.cwd(), '7z-linux', '7zz');
+    } else {
+      sevenZipPath = path.join(process.cwd(), '7z-win', '7zr.exe');
+    }
     const outputPath = path.join(
       process.cwd(),
       'public',
@@ -168,7 +173,7 @@ export class ExamService {
 
     try {
       await execPromise(
-        `${sevenZipPath} x "${resultFile.path}" -ptest -o"${outputPath}"`,
+        `"${sevenZipPath}" x "${resultFile.path}" -ptest -o"${outputPath}"`,
       );
 
       const jsonData = this.jsonService.readJsonFile(
