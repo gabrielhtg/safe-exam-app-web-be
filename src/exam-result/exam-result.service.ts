@@ -30,7 +30,9 @@ export class ExamResultService {
             question: true,
           },
         },
-        exam: true,
+        exam: {
+          include: { course: true },
+        },
         proctoring_logs: true,
       },
     });
