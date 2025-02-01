@@ -99,10 +99,8 @@ export class ExamService {
           title: updateData.title ? updateData.title : undefined,
           start_password: updateData.start_password
             ? updateData.start_password
-            : undefined,
-          end_password: updateData.end_password
-            ? updateData.end_password
-            : undefined,
+            : '',
+          end_password: updateData.end_password ? updateData.end_password : '',
           config_password: updateData.config_password ? uuidv4() : undefined,
           start_date: updateData.start_date ? updateData.start_date : undefined,
           end_date: updateData.end_date ? updateData.end_date : undefined,
@@ -387,6 +385,12 @@ export class ExamService {
       'public/exam_config_file',
       fileName,
     );
+
+    const folderPath = path.dirname(filePath);
+
+    if (!fs.existsSync(folderPath)) {
+      fs.mkdirSync(folderPath, { recursive: true });
+    }
 
     const key = createHash('sha256')
       .update(examData.config_password)
