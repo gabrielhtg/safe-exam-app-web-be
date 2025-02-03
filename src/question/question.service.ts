@@ -104,8 +104,24 @@ export class QuestionService {
     });
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} question`;
+  async findOne(id: number, res: Response) {
+    const questionData = await this.prismaService.question.findUnique({
+      where: {
+        id: id,
+      },
+    });
+
+    if (!questionData) {
+      return res.status(400).json({
+        message: 'No data',
+        data: null,
+      });
+    }
+
+    return res.status(200).json({
+      message: 'success',
+      data: questionData,
+    });
   }
 
   async update(id: number, updateData: any, res: Response) {

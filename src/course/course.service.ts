@@ -37,7 +37,7 @@ export class CourseService {
       data: await this.prismaService.course.findMany({
         where: {
           title: {
-            startsWith: search,
+            contains: search,
           },
           created_by: uploader,
         },

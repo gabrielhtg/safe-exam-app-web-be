@@ -50,8 +50,8 @@ export class QuestionController {
   }
 
   @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.questionService.findOne(+id);
+  findOne(@Param('id') id: string, @Res() res: Response) {
+    return this.questionService.findOne(+id, res);
   }
 
   @Patch(':id')
