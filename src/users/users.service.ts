@@ -70,8 +70,8 @@ export class UsersService {
     if (
       !(await this.securityService.isMatch(user.password, reqBody.old_password))
     ) {
-      return res.status(HttpStatus.UNAUTHORIZED).json({
-        message: 'Incorrect credentials',
+      return res.status(HttpStatus.BAD_REQUEST).json({
+        message: 'Invalid Input',
         data: null,
       });
     }
@@ -132,7 +132,7 @@ export class UsersService {
         name: requestBody.name,
         username: requestBody.username,
         email: requestBody.email,
-        profile_pict: `profile_pict/${file.filename}`,
+        profile_pict: file ? `profile_pict/${file.filename}` : undefined,
       },
     });
   }

@@ -26,11 +26,8 @@ export class AuthController {
   //   return await this.authService.forgotPassword(email);
   // }
 
-  // @Post('reset-password')
-  // async resetPassword(
-  //   @Body('token') token: string,
-  //   @Body('newPassword') newPassword: string,
-  // ) {
-  //   return await this.authService.resetPassword(token, newPassword);
-  // }
+  @Post('reset-password')
+  async resetPassword(@Body() emailData: any, @Res() res: Response) {
+    return await this.authService.resetPassword(emailData.email, res);
+  }
 }

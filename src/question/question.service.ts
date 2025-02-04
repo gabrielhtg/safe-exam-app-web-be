@@ -125,7 +125,28 @@ export class QuestionService {
   }
 
   async update(id: number, updateData: any, res: Response) {
-    return false;
+    const updateResponse = await this.prismaService.question.update({
+      where: {
+        id: id,
+      },
+      data: {
+        content: updateData.content,
+        options: updateData.options,
+        type: updateData.type,
+      },
+    });
+
+    if (!updateResponse) {
+      return res.status(400).json({
+        message: 'Question not found!',
+        data: null,
+      });
+    }
+
+    return res.status(200).json({
+      message: 'Question updated successfully!',
+      data: updateResponse,
+    });
   }
 
   async remove(id: number, res: Response) {
