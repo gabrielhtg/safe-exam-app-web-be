@@ -7,6 +7,7 @@ import { UsersModule } from '../users/users.module';
 import { SecurityService } from '../security/security.service';
 import { jwtConstants } from './constants';
 import { PrismaService } from '../prisma.service';
+import { MailerModule } from '@nestjs-modules/mailer';
 
 @Module({
   controllers: [AuthController],
@@ -14,6 +15,18 @@ import { PrismaService } from '../prisma.service';
   imports: [
     ConfigModule.forRoot(),
     UsersModule,
+
+    MailerModule.forRoot({
+      transport: {
+        host: 'smtp.gmail.com',
+        port: 587,
+        secure: false,
+        auth: {
+          user: process.env.EMAIL_USERNAME,
+          pass: process.env.EMAIL_PASSWORD,
+        },
+      },
+    }),
     JwtModule.register({
       global: true,
       secret: jwtConstants.secret,

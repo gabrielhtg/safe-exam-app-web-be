@@ -11,7 +11,6 @@ import { QuestionModule } from './question/question.module';
 import { ExamResultModule } from './exam-result/exam-result.module';
 import { AllowedStudentModule } from './allowed-student/allowed-student.module';
 import { ExamConfigModule } from './exam-config/exam-config.module';
-import { MailerModule } from '@nestjs-modules/mailer';
 
 @Module({
   imports: [
@@ -19,17 +18,6 @@ import { MailerModule } from '@nestjs-modules/mailer';
     UsersModule,
     ServeStaticModule.forRoot({
       rootPath: join(__dirname, '..', 'public'),
-    }),
-    MailerModule.forRoot({
-      transport: {
-        host: 'smtp.gmail.com',
-        port: 587,
-        secure: false,
-        auth: {
-          user: process.env.EMAIL_USERNAME,
-          pass: process.env.EMAIL_PASSWORD,
-        },
-      },
     }),
     CourseModule,
     ExamModule,
