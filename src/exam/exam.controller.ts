@@ -96,7 +96,7 @@ export class ExamController {
   //   @Res() res: Response,
   // ) {
   //   const result = await this.examService.gradeEssayAnswer(Number(id), body.score, body.isCorrect);
-    
+
   //   return res.status(result.status).json({
   //     message: result.message,
   //     ...(result.data && { data: result.data }),
@@ -107,10 +107,9 @@ export class ExamController {
   @UseGuards(AuthGuard)
   @Get(':id/essayAnswer')
   async getEssayAnswer(
-    @Param('id') examResultId:string, 
+    @Param('id') examResultId: string,
     @Res() res: Response,
-  ){
-    return this.examService.findEssayAnswer(Number(examResultId), res)
+  ) {
+    return this.examService.findEssayAnswer(Number(examResultId), res);
   }
 }
-

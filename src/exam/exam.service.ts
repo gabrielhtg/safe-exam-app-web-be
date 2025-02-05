@@ -116,25 +116,17 @@ export class ExamService {
           start_date: updateData.start_date ? updateData.start_date : undefined,
           end_date: updateData.end_date ? updateData.end_date : undefined,
           sequential: updateData.sequential ? updateData.sequential : undefined,
-          shuffle_options: updateData.shuffle_options
-            ? updateData.shuffle_options
-            : undefined,
-          shuffle_questions: updateData.shuffle_questions
-            ? updateData.shuffle_questions
-            : undefined,
-          enable_review: updateData.enable_review
-            ? updateData.enable_review
-            : undefined,
-          show_grade: updateData.show_grade ? updateData.show_grade : undefined,
+          shuffle_options: updateData.shuffle_options,
+          shuffle_questions: updateData.shuffle_questions,
+          enable_review: updateData.enable_review,
+          show_grade: updateData.show_grade,
           passing_grade: updateData.passing_grade
             ? updateData.passing_grade
             : undefined,
           description: updateData.description
             ? updateData.description
             : undefined,
-          enable_proctoring: updateData.enable_proctoring
-            ? updateData.enable_proctoring
-            : undefined,
+          enable_proctoring: updateData.enable_proctoring,
           cheating_limit: updateData.cheating_limit
             ? updateData.cheating_limit
             : undefined,
