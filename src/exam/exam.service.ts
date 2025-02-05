@@ -10,6 +10,7 @@ import * as process from 'node:process';
 import { JsonService } from './json.service';
 import * as util from 'node:util';
 import * as os from 'node:os';
+import { ExamResult } from '@prisma/client';
 
 @Injectable()
 export class ExamService {
@@ -311,6 +312,73 @@ export class ExamService {
       });
     }
   }
+
+  async findEssayAnswer(examResultId:number, res: Response) {
+    try {
+      const data = await this.prismaService.examAnswer.findMany({
+        where: {
+          result_id:examResultId,
+          question: {
+            type: 'essay',
+          },
+        },
+        include: {
+          question: true,
+          result: true,
+        },
+        orderBy: {
+          created_at: 'desc',
+        },
+      });
+      
+      return res.status(HttpStatus.OK).json({
+        message: 'ok',
+        data,
+      });
+    } catch (error) {
+      return res.status(HttpStatus.INTERNAL_SERVER_ERROR).json({
+        message: 'Error retrieving essay answers',
+        error: error.message,
+      });
+    }
+  }
+
+  // async gradeEssayAnswer(id: number, score: number, isCorrect: boolean) {
+  //   try {
+  //     // Validasi score sebelum update
+  //     if (typeof score !== 'number' || score < 0) {
+  //       return {
+  //         status: HttpStatus.BAD_REQUEST,
+  //         message: 'Invalid score value',
+  //       };
+  //     }
+  
+  //     const updatedAnswer = await this.prismaService.examAnswer.update({
+  //       where: { id },
+  //       data: {
+  //         score,
+  //         is_correct: isCorrect,
+  //         updated_at: new Date(),
+  //       },
+  //     });
+  
+  //     console.log(`graded sucessfully for answer id: ${id}`)
+  //     console.log(`updated data: ${updatedAnswer}`)
+  //     return {
+  //       status: HttpStatus.OK,
+  //       message: 'Grade updated successfully',
+  //       data: updatedAnswer,
+  //     };
+  //   } catch (error) {
+  //     return {
+  //       status: HttpStatus.INTERNAL_SERVER_ERROR,
+  //       message: 'Failed to update grade',
+  //       error: error.message,
+  //     };
+  //   }
+  // }
+  
+  
 
   async generateExamFile(examId: number, res: Response) {
     const examData = await this.prismaService.exam.findUnique({

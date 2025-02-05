@@ -18,5 +18,5 @@
     "forceConsistentCasingInFileNames": false,
     "noFallthroughCasesInSwitch": false
   }, 
-  "include": ["src/**/*", "node_modules/@nestjs/common"]
+  "include": ["src/**/*", "node_modules/@nestjs/common", "src/auth/constants.ts"]
 }

@@ -87,4 +87,30 @@ export class ExamController {
   ) {
     return this.examService.submit(file, res);
   }
+
+  // @UseGuards(AuthGuard)
+  // @Patch(':id/grade')
+  // async gradeExamAnswer(
+  //   @Param('id') id: string,
+  //   @Body() body: { score: number; isCorrect: boolean },
+  //   @Res() res: Response,
+  // ) {
+  //   const result = await this.examService.gradeEssayAnswer(Number(id), body.score, body.isCorrect);
+    
+  //   return res.status(result.status).json({
+  //     message: result.message,
+  //     ...(result.data && { data: result.data }),
+  //     ...(result.error && { error: result.error }),
+  //   });
+  // }
+
+  @UseGuards(AuthGuard)
+  @Get(':id/essayAnswer')
+  async getEssayAnswer(
+    @Param('id') examResultId:string, 
+    @Res() res: Response,
+  ){
+    return this.examService.findEssayAnswer(Number(examResultId), res)
+  }
 }
+
