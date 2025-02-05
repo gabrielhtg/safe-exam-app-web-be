@@ -10,7 +10,6 @@ import * as process from 'node:process';
 import { JsonService } from './json.service';
 import * as util from 'node:util';
 import * as os from 'node:os';
-import { ExamResult } from '@prisma/client';
 
 @Injectable()
 export class ExamService {
@@ -52,9 +51,20 @@ export class ExamService {
       message: 'ok',
       data: await this.prismaService.exam.findMany({
         where: {
-          title: {
-            startsWith: search,
-          },
+          OR: [
+            {
+              title: {
+                contains: search,
+              },
+            },
+            {
+              course: {
+                title: {
+                  contains: search,
+                },
+              },
+            },
+          ],
           course_id: course ? course : undefined,
           created_by: uploader,
         },
@@ -313,11 +323,11 @@ export class ExamService {
     }
   }
 
-  async findEssayAnswer(examResultId:number, res: Response) {
+  async findEssayAnswer(examResultId: number, res: Response) {
     try {
       const data = await this.prismaService.examAnswer.findMany({
         where: {
-          result_id:examResultId,
+          result_id: examResultId,
           question: {
             type: 'essay',
           },
@@ -330,7 +340,7 @@ export class ExamService {
           created_at: 'desc',
         },
       });
-      
+
       return res.status(HttpStatus.OK).json({
         message: 'ok',
         data,
@@ -352,7 +362,7 @@ export class ExamService {
   //         message: 'Invalid score value',
   //       };
   //     }
-  
+
   //     const updatedAnswer = await this.prismaService.examAnswer.update({
   //       where: { id },
   //       data: {
@@ -361,7 +371,7 @@ export class ExamService {
   //         updated_at: new Date(),
   //       },
   //     });
-  
+
   //     console.log(`graded sucessfully for answer id: ${id}`)
   //     console.log(`updated data: ${updatedAnswer}`)
   //     return {
@@ -377,8 +387,6 @@ export class ExamService {
   //     };
   //   }
   // }
-  
-  
 
   async generateExamFile(examId: number, res: Response) {
     const examData = await this.prismaService.exam.findUnique({
