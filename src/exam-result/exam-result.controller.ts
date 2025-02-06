@@ -73,7 +73,7 @@ export class ExamResultController {
   
       return {
         statusCode: HttpStatus.OK,
-        message: 'Grade updated and total score calculated successfully',
+        message: 'Grade updated successfully',
         data: result.data,
       };
     } catch (error) {
@@ -82,6 +82,22 @@ export class ExamResultController {
         HttpStatus.INTERNAL_SERVER_ERROR,
       );
     }
+  }
+
+  @UseGuards(AuthGuard)
+  @Patch(':id/calculate-score')
+  async calculateScore(@Param('id') id: string) {
+    if (isNaN(Number(id))) {
+      throw new HttpException('Invalid result ID', HttpStatus.BAD_REQUEST);
+    }
+
+    const result = await this.examResultService.calculateTotalScore(Number(id));
+
+    return {
+      statusCode: HttpStatus.OK,
+      message: 'Total Score calculated successfully',
+      data: result,
+    };
   }
   
 }

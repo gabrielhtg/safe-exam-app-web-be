@@ -116,6 +116,7 @@ model ExamResult {
   user_username      String          @db.VarChar(25)
   indicated_cheating Boolean         @default(false)
   proctoring_logs    ProctoringLog[]
+  graded             Boolean         @default(false)
 }
 
 model ProctoringLog {
