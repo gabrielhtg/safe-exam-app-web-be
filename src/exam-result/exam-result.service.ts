@@ -92,7 +92,7 @@ export class ExamResultService {
             correctQuestion = {
               ...correctQuestion,
               [question.id]: (+correctQuestion[question.id] || 0) + +question.point,
-            };
+            }
           }
         } else if (question.type === 'check-box') {
           question.options.forEach((option: any) => {
@@ -143,8 +143,8 @@ export class ExamResultService {
       console.log("Updated Answer:", updatedAnswer);
       console.log(`Graded successfully for answer ID: ${id}`);
   
-      // Hitung ulang total_score di ExamResult
-      const totalScore = await this.calculateTotalScore(updatedAnswer.result_id);
+      // // Hitung ulang total_score di ExamResult
+      // const totalScore = await this.calculateTotalScore(updatedAnswer.result_id);
       
       const checkUpdate = await this.prismaService.examAnswer.findUnique({
         where: { id },
@@ -153,8 +153,8 @@ export class ExamResultService {
       console.log("Check Updated Answer:", checkUpdate);
       return {
         status: HttpStatus.OK,
-        message: 'Grade updated and total score calculated successfully',
-        data: { updatedAnswer, totalScore },
+        message: 'Grade updated successfully',
+        data: { updatedAnswer},
       };
     } catch (error) {
       console.error('Error grading answer:', error);
