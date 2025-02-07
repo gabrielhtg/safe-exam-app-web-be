@@ -74,6 +74,9 @@ export class QuestionService {
       orderBy: {
         [sortBy]: order,
       },
+      include: {
+        course: true,
+      },
     });
 
     return res.status(HttpStatus.OK).json({
