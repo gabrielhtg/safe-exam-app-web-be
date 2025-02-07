@@ -29,6 +29,7 @@ COPY package.json ./
 COPY . .
 
 RUN npm install
+RUN chmod +x run.sh
 
 EXPOSE 3001
 
