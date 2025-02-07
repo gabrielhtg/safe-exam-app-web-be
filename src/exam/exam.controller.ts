@@ -112,4 +112,13 @@ export class ExamController {
   ) {
     return this.examService.findEssayAnswer(Number(examResultId), res);
   }
+
+  @UseGuards(AuthGuard)
+  @Get(':id/review-result')
+  async getAnswer(
+    @Param('id') examResultId: string,
+    @Res() res: Response,
+  ) {
+    return this.examService.findAnswer(Number(examResultId), res);
+  }
 }

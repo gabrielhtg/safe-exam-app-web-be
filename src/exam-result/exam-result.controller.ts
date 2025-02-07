@@ -83,7 +83,7 @@ export class ExamResultController {
       );
     }
   }
-
+  
   @UseGuards(AuthGuard)
   @Patch(':id/calculate-score')
   async calculateScore(@Param('id') id: string) {

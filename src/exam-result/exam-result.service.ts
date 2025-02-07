@@ -59,6 +59,7 @@ export class ExamResultService {
         where: { result_id: resultId },
         include: { question: true }, // Ambil data pertanyaan untuk mendapatkan point
       });
+      console.log(`Answers for resultId ${resultId}:`, answers);
   
       let tempTotalScore = 0;
       let correctQuestion: any = {};
@@ -70,7 +71,9 @@ export class ExamResultService {
   
         if (question.type === 'multiple') {
           question.options.forEach((option: any) => {
+            console.log(`Question ID: ${question.id}, Point: ${question.point}`);
             if (answer.selectedOptionId === option.id && option.isCorrect) {
+              console.log(`✅ Multiple choice correct! Adding ${question.point}`);
               tempTotalScore += +question.point;
               correctQuestion = {
                 ...correctQuestion,
@@ -117,6 +120,7 @@ export class ExamResultService {
         data: { total_score: tempTotalScore },
       });
   
+      console.log(`Updated total_score: ${updatedExamResult.total_score}`);
       console.log(`Total score recalculated for ExamResult ID: ${resultId} => ${tempTotalScore}`);
   
       return updatedExamResult;
