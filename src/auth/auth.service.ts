@@ -128,14 +128,23 @@ export class AuthService {
 </html>  
     `;
 
-    const updateData = await this.prismaService.user.update({
-      where: {
-        email: email,
-      },
-      data: {
-        password: await this.securityService.hashPassword(newPassword),
-      },
-    });
+    let updateData: any;
+
+    try {
+      updateData = await this.prismaService.user.update({
+        where: {
+          email: email,
+        },
+        data: {
+          password: await this.securityService.hashPassword(newPassword),
+        },
+      });
+    } catch {
+      return res.status(HttpStatus.BAD_REQUEST).json({
+        message: 'Email not found.',
+        data: null,
+      });
+    }
 
     if (updateData) {
       this.mailService
