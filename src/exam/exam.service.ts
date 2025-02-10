@@ -276,10 +276,10 @@ export class ExamService {
             data: null,
           });
         }
-        return res.status(400).json({
-          message: 'Unknown error.',
-          data: null,
-        });
+        // return res.status(400).json({
+        //   message: 'Unknown error.',
+        //   data: null,
+        // });
       }
 
       for (let i = 0; i < proctoringData.length; i++) {
@@ -321,7 +321,7 @@ export class ExamService {
     } catch (error) {
       console.log(error);
       return res.status(HttpStatus.BAD_REQUEST).json({
-        message: `Exam submission failed!`,
+        message: `Exam submission failed!`, error,
         // data: createExamResultData,
       });
     }

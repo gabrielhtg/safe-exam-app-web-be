@@ -54,63 +54,51 @@ export class ExamResultService {
 
   async calculateTotalScore(resultId: number) {
     try {
-      // Ambil semua jawaban dari ExamResult yang bersangkutan
       const answers = await this.prismaService.examAnswer.findMany({
         where: { result_id: resultId },
-        include: { question: true }, // Ambil data pertanyaan untuk mendapatkan point
+        include: { question: true },
       });
-      console.log(`Answers for resultId ${resultId}:`, answers);
   
       let tempTotalScore = 0;
       let correctQuestion: any = {};
   
       answers.forEach((answer: any) => {
         const question = answer.question;
+        if (!question || question.point == null) return;
   
-        if (!question.point) return; // Pastikan question.point valid (ada dan angka)
+        const maxPoint = Number(question.point);
+        const options: any[] = Array.isArray(question.options) ? question.options : [];
   
+        // Multiple choice
         if (question.type === 'multiple') {
-          question.options.forEach((option: any) => {
-            console.log(`Question ID: ${question.id}, Point: ${question.point}`);
-            if (answer.selectedOptionId === option.id && option.isCorrect) {
-              console.log(`✅ Multiple choice correct! Adding ${question.point}`);
-              tempTotalScore += +question.point;
-              correctQuestion = {
-                ...correctQuestion,
-                [question.id]: (+correctQuestion[question.id] || 0) + +question.point,
-              };
-            }
-          });
-        } else if (question.type === 'essay') {
-          // Untuk soal tipe essay, tambahkan nilai score dari examAnswer (jika ada)
-          if (answer.score !== undefined) {
-            tempTotalScore += +answer.score; // Tambahkan nilai score yang diupdate untuk soal essay
-            correctQuestion = {
-              ...correctQuestion,
-              [question.id]: (+correctQuestion[question.id] || 0) + +answer.score,
-            };
-          } else if (answer.isCorrect) {
-            // Jika soal essay dianggap benar tanpa update manual, tambahkan nilai dari question.point
-            tempTotalScore += +question.point;
-            correctQuestion = {
-              ...correctQuestion,
-              [question.id]: (+correctQuestion[question.id] || 0) + +question.point,
-            }
+          const selectedOption = options.find((option: any) => option.id === answer.answer);
+          if (selectedOption && selectedOption.isCorrect) {
+            tempTotalScore += maxPoint;
+            correctQuestion[question.id] = maxPoint;
           }
-        } else if (question.type === 'check-box') {
-          question.options.forEach((option: any) => {
-            if (+option.id.split('.')[0] === question.id) {
-              // Periksa jika answer.selectedAnswers ada dan sesuai dengan option.id
-              if (answer.selectedAnswers && answer.selectedAnswers.includes(option.id) && option.isCorrect) {
-                const correctAnswersCount = question.options.filter((tmp: any) => tmp.isCorrect).length;
-                tempTotalScore += (1 / correctAnswersCount) * question.point;
-                correctQuestion = {
-                  ...correctQuestion,
-                  [question.id]: (+correctQuestion[question.id] || 0) + (1 / correctAnswersCount) * question.point,
-                };
+        }
+        // Checkbox
+        else if (question.type === 'check-box') {
+          if (Array.isArray(answer.answer)) {
+            const correctOptions = options.filter((option: any) => option.isCorrect);
+            const numCorrectOptions = correctOptions.length;
+            answer.answer.forEach((selectedId: any) => {
+              if (correctOptions.some((option: any) => option.id === selectedId)) {
+                tempTotalScore += maxPoint / numCorrectOptions;
+                correctQuestion[question.id] = (correctQuestion[question.id] || 0) + (maxPoint / numCorrectOptions);
               }
-            }
-          });
+            });
+          }
+        }
+        // Essay
+        else if (question.type === 'essay') {
+          if (answer.score !== undefined && answer.score !== null) {
+            tempTotalScore += Number(answer.score);
+            correctQuestion[question.id] = Number(answer.score);
+          } else if (answer.is_correct) {
+            tempTotalScore += maxPoint;
+            correctQuestion[question.id] = maxPoint;
+          }
         }
       });
   
@@ -120,15 +108,12 @@ export class ExamResultService {
         data: { total_score: tempTotalScore },
       });
   
-      console.log(`Updated total_score: ${updatedExamResult.total_score}`);
-      console.log(`Total score recalculated for ExamResult ID: ${resultId} => ${tempTotalScore}`);
-  
       return updatedExamResult;
     } catch (error) {
       console.error('Error calculating total score:', error);
       throw new HttpException('Failed to calculate total score', HttpStatus.INTERNAL_SERVER_ERROR);
     }
-  }
+  } 
 
   async gradeEssayAnswer(id: number, score: number) {
     try {
@@ -165,9 +150,29 @@ export class ExamResultService {
       throw new HttpException('Failed to update grade', HttpStatus.INTERNAL_SERVER_ERROR);
     }
   }
-  
-  
 
+  async updateGraded(resultId: number, updateGraded: boolean) {
+    try {
+      const update = await this.prismaService.examResult.update({
+        where: { id: resultId },
+        data: { graded: updateGraded },
+      });
+  
+      console.log("Updated graded status:", update);
+  
+      // Hitung ulang total_score setelah status graded diubah
+      await this.calculateTotalScore(resultId);
+  
+      return {
+        status: HttpStatus.OK,
+        message: 'Grading status updated successfully',
+      };
+    } catch (error) {
+      console.error('Error updating graded status:', error);
+      throw new HttpException('Failed to update grading status', HttpStatus.INTERNAL_SERVER_ERROR);
+    }
+  }
+  
   async removeAll(examId: number, username: string, res: Response) {
     const removeData = await this.prismaService.examResult.deleteMany({
       where: {

@@ -85,19 +85,21 @@ export class ExamResultController {
   }
   
   @UseGuards(AuthGuard)
-  @Patch(':id/calculate-score')
-  async calculateScore(@Param('id') id: string) {
-    if (isNaN(Number(id))) {
-      throw new HttpException('Invalid result ID', HttpStatus.BAD_REQUEST);
+  @Patch(':id/update-graded')
+  async updateGraded(
+    @Param('id') resultId: number,
+    @Body('graded') updateGraded: boolean
+  ) {
+    try {
+      const result = await this.examResultService.updateGraded(Number(resultId), updateGraded);
+      return {
+        status: HttpStatus.OK,
+        message: 'Grading status updated successfully',
+        data: result,
+      };
+    } catch (error) {
+      throw new HttpException('Error updating grading status', HttpStatus.INTERNAL_SERVER_ERROR);
     }
-
-    const result = await this.examResultService.calculateTotalScore(Number(id));
-
-    return {
-      statusCode: HttpStatus.OK,
-      message: 'Total Score calculated successfully',
-      data: result,
-    };
   }
   
 }
