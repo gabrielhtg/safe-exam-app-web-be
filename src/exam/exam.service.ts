@@ -199,7 +199,7 @@ export class ExamService {
 
       if (submitByUsername.length >= examData.allowed_attempts) {
         return res.status(400).json({
-          message: 'You have reached the maximum attempt limit of 3 times.',
+          message: `You have reached the maximum attempt limit of ${examData.allowed_attempts} times.`,
           data: null,
         });
       }
