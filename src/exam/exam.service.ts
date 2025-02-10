@@ -254,18 +254,33 @@ export class ExamService {
         },
       });
 
-      const createExamResultData = await this.prismaService.examResult.create({
-        data: {
-          exam_id: examData.id,
-          user_username: username,
-          total_score: tempScore,
-          expected_score: tempTotalScore,
-          attempt: getExamResultData.length + 1,
-          indicated_cheating:
-            proctoringData.length >= jsonData.exam.cheating_limit,
-          submit_id: submitId,
-        },
-      });
+      let createExamResultData: any;
+
+      try {
+        createExamResultData = await this.prismaService.examResult.create({
+          data: {
+            exam_id: examData.id,
+            user_username: username,
+            total_score: tempScore,
+            expected_score: tempTotalScore,
+            attempt: getExamResultData.length + 1,
+            indicated_cheating:
+              proctoringData.length >= jsonData.exam.cheating_limit,
+            submit_id: submitId,
+          },
+        });
+      } catch (error) {
+        if (error.code === 'P2002') {
+          return res.status(400).json({
+            message: 'You have already submitted this exam file.',
+            data: null,
+          });
+        }
+        return res.status(400).json({
+          message: 'Unknown error.',
+          data: null,
+        });
+      }
 
       for (let i = 0; i < proctoringData.length; i++) {
         await this.prismaService.proctoringLog.create({
