@@ -191,6 +191,19 @@ export class ExamService {
       let correctQuestion = {};
       const proctoringData = jsonData.proctoringLog;
 
+      const submitByUsername = await this.prismaService.examResult.findMany({
+        where: {
+          user_username: username,
+        },
+      });
+
+      if (submitByUsername.length >= examData.allowed_attempts) {
+        return res.status(400).json({
+          message: 'You have reached the maximum attempt limit of 3 times.',
+          data: null,
+        });
+      }
+
       if (req.id === examData.id) {
         return res.status(400).json({
           message: 'Exams are not the same.',
