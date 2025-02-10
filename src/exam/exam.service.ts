@@ -157,7 +157,7 @@ export class ExamService {
     });
   }
 
-  async submit(resultFile: Express.Multer.File, res: Response) {
+  async submit(req: any, resultFile: Express.Multer.File, res: Response) {
     const execPromise = util.promisify(exec);
     let sevenZipPath: string;
     if (os.platform() === 'win32') {
@@ -185,22 +185,18 @@ export class ExamService {
       const examData = jsonData.exam;
       const answerData = jsonData.answer;
       const questionsData = jsonData.questions;
+      const submitId = jsonData.submit_id;
       let tempTotalScore = 0;
       let tempScore = 0;
       let correctQuestion = {};
       const proctoringData = jsonData.proctoringLog;
 
-      // fs.readdir(outputPath, (err, files) => {
-      //   if (err) {
-      //     console.error('Error reading directory:', err.message);
-      //     return;
-      //   }
-      //   imageFile = files;
-      //
-      //   console.log(files);
-      //
-      //
-      // });
+      if (req.id === examData.id) {
+        return res.status(400).json({
+          message: 'Exams are not the same.',
+          data: null,
+        });
+      }
 
       questionsData.forEach((question: any) => {
         if (question.type === 'multiple') {
@@ -267,6 +263,7 @@ export class ExamService {
           attempt: getExamResultData.length + 1,
           indicated_cheating:
             proctoringData.length >= jsonData.exam.cheating_limit,
+          submit_id: submitId,
         },
       });
 

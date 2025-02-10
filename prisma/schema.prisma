@@ -113,6 +113,7 @@ model ExamResult {
   created_at         DateTime        @default(now())
   updated_at         DateTime        @updatedAt
   answers            ExamAnswer[]
+  submit_id          String          @unique @db.VarChar(36)
   user_username      String          @db.VarChar(25)
   indicated_cheating Boolean         @default(false)
   proctoring_logs    ProctoringLog[]

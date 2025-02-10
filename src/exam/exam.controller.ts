@@ -82,10 +82,12 @@ export class ExamController {
   @UseInterceptors(FileInterceptor('result_file', uploadResultFile))
   @Post('submit')
   async submit(
-    @UploadedFile() file: Express.Multer.File,
+    @Body() req: any,
+    @UploadedFile()
+    file: Express.Multer.File,
     @Res() res: Response,
   ) {
-    return this.examService.submit(file, res);
+    return this.examService.submit(req, file, res);
   }
 
   // @UseGuards(AuthGuard)
@@ -115,10 +117,7 @@ export class ExamController {
 
   @UseGuards(AuthGuard)
   @Get(':id/review-result')
-  async getAnswer(
-    @Param('id') examResultId: string,
-    @Res() res: Response,
-  ) {
+  async getAnswer(@Param('id') examResultId: string, @Res() res: Response) {
     return this.examService.findAnswer(Number(examResultId), res);
   }
 }
