@@ -174,7 +174,7 @@ export class ExamService {
 
     try {
       await execPromise(
-        `"${sevenZipPath}" x "${resultFile.path}" -ptest -o"${outputPath}"`,
+        `"${sevenZipPath}" x "${resultFile.path}" -p${process.env.DECRYPT_EXAM_PASSWORD} -o"${outputPath}"`,
       );
 
       const jsonData = this.jsonService.readJsonFile(
@@ -321,7 +321,8 @@ export class ExamService {
     } catch (error) {
       console.log(error);
       return res.status(HttpStatus.BAD_REQUEST).json({
-        message: `Exam submission failed!`, error,
+        message: `Exam submission failed!`,
+        error,
         // data: createExamResultData,
       });
     }
