@@ -53,7 +53,6 @@ export class CourseController {
     );
   }
 
-  @UseGuards(AuthGuard)
   @Get(':id')
   async findOne(@Param('id') id: string, @Res() res: Response) {
     return this.courseService.findOne(+id, res);

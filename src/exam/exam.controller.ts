@@ -56,7 +56,6 @@ export class ExamController {
     return this.examService.generateExamFile(+examId, res);
   }
 
-  @UseGuards(AuthGuard)
   @Get(':id')
   findOne(@Param('id') id: string, @Res() res: Response) {
     this.examService.findOne(+id, res);
