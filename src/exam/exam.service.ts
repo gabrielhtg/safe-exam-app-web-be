@@ -173,9 +173,15 @@ export class ExamService {
     );
 
     try {
-      await execPromise(
-        `"${sevenZipPath}" x "${resultFile.path}" -p${process.env.DECRYPT_EXAM_PASSWORD} -o"${outputPath}"`,
-      );
+      if (os.platform() === 'win32') {
+        await execPromise(
+          `"${sevenZipPath}" x "${resultFile.path}" -p${process.env.DECRYPT_EXAM_PASSWORD} -o"${outputPath}"`,
+        );
+      } else {
+        await execPromise(
+          `7zz x "${resultFile.path}" -p${process.env.DECRYPT_EXAM_PASSWORD} -o"${outputPath}"`,
+        );
+      }
 
       const jsonData = this.jsonService.readJsonFile(
         path.join(outputPath, 'data.json'),

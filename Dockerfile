@@ -20,7 +20,7 @@ FROM alpine:latest
 LABEL authors="ta-12"
 
 RUN apk update && apk upgrade
-RUN apk add --no-cache nodejs npm openssl
+RUN apk add --no-cache nodejs npm openssl 7zip
 
 WORKDIR /app
 
