@@ -117,40 +117,52 @@ export class ExamResultService {
 
   async gradeEssayAnswer(id: number, score: number) {
     try {
-      // Validasi score sebelum update
       if (typeof score !== 'number' || score < 0) {
         throw new HttpException('Invalid score value', HttpStatus.BAD_REQUEST);
       }
   
-      // Update score dan is_correct di ExamAnswer
+      const answer = await this.prismaService.examAnswer.findUnique({
+        where: { id },
+        include: { question: true },
+      });
+  
+      if (!answer) {
+        throw new HttpException('Answer not found', HttpStatus.NOT_FOUND);
+      }
+  
+      const maxPoint = answer.question.point;
+  
+      if (maxPoint === null || maxPoint === undefined) {
+        throw new HttpException('Question point is not set', HttpStatus.BAD_REQUEST);
+      }
+  
+      if (score > Number(maxPoint)) {
+        throw new HttpException(
+          `Score cannot exceed maximum point (${maxPoint})`,
+          HttpStatus.BAD_REQUEST
+        );
+      }
+
       const updatedAnswer = await this.prismaService.examAnswer.update({
         where: { id },
         data: { score, updated_at: new Date() },
-        include: { result: true }, // Ambil data result agar bisa akses result_id
+        include: { result: true }, 
       });
   
       console.log("Updated Answer:", updatedAnswer);
       console.log(`Graded successfully for answer ID: ${id}`);
   
-      // // Hitung ulang total_score di ExamResult
-      // const totalScore = await this.calculateTotalScore(updatedAnswer.result_id);
-      
-      const checkUpdate = await this.prismaService.examAnswer.findUnique({
-        where: { id },
-      });
-      
-      console.log("Check Updated Answer:", checkUpdate);
       return {
         status: HttpStatus.OK,
         message: 'Grade updated successfully',
-        data: { updatedAnswer},
+        data: { updatedAnswer },
       };
     } catch (error) {
       console.error('Error grading answer:', error);
       throw new HttpException('Failed to update grade', HttpStatus.INTERNAL_SERVER_ERROR);
     }
   }
-
+  
   async updateGraded(resultId: number, updateGraded: boolean) {
     try {
       const update = await this.prismaService.examResult.update({
