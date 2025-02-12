@@ -449,14 +449,17 @@ export class ExamService {
       },
     });
 
-    const questionsData = await this.prismaService.examQuestion.findMany({
+    const questionsData = await this.prismaService.question.findMany({
       where: {
-        examId: examId,
-      },
-      include: {
-        question: true,
+        exams: {
+          some: {
+            examId: examId,
+          },
+        },
       },
     });
+
+    console.log(questionsData);
 
     if (questionsData.length === 0) {
       return res.status(400).json({
