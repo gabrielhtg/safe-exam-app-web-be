@@ -366,7 +366,7 @@ export class ExamService {
         },
       });
 
-      console.log("data essay answer", data)
+      console.log('data essay answer', data);
       // if (data.length === 0) {
       //   await this.prismaService.examResult.update({
       //     where: { id: examResultId },

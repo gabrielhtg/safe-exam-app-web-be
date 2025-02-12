@@ -57,7 +57,7 @@ export class QuestionService {
     uploader: string,
     res: Response,
   ) {
-    const getData: any = await this.prismaService.question.findMany({
+    const getData = await this.prismaService.question.findMany({
       where: {
         content: {
           contains: search,
@@ -66,7 +66,7 @@ export class QuestionService {
         course_id: course_id ? course_id : undefined,
         exams: {
           some: {
-            examId: exam ? exam : undefined,
+            examId: exam,
           },
         },
       },
@@ -76,9 +76,16 @@ export class QuestionService {
       },
       include: {
         course: true,
+        exams: {
+          where: {
+            examId: exam,
+          },
+          include: {
+            exam: true,
+          },
+        },
       },
     });
-
     return res.status(HttpStatus.OK).json({
       message: 'ok',
       data: getData,
