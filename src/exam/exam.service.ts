@@ -449,17 +449,14 @@ export class ExamService {
       },
     });
 
-    const questionsData = examData.questions;
-
-    // const questionsData = await this.prismaService.question.findMany({
-    //   where: {
-    //     exams: {
-    //       some: {
-    //         examId: examId,
-    //       },
-    //     },
-    //   },
-    // });
+    const questionsData = await this.prismaService.examQuestion.findMany({
+      where: {
+        examId: examId,
+      },
+      include: {
+        question: true,
+      },
+    });
 
     if (questionsData.length === 0) {
       return res.status(400).json({
