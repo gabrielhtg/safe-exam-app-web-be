@@ -65,7 +65,7 @@ export class QuestionService {
         created_by: uploader,
         course_id: course_id ? course_id : undefined,
         exams: {
-          every: {
+          some: {
             examId: exam ? exam : undefined,
           },
         },
