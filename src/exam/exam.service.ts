@@ -89,6 +89,7 @@ export class ExamService {
           },
           include: {
             course: true,
+            questions: true,
           },
         }),
       });
@@ -411,6 +412,7 @@ export class ExamService {
       },
       include: {
         course: true,
+        questions: true,
       },
     });
 
@@ -440,15 +442,17 @@ export class ExamService {
       },
     });
 
-    const questionsData = await this.prismaService.question.findMany({
-      where: {
-        exams: {
-          some: {
-            examId: examId,
-          },
-        },
-      },
-    });
+    const questionsData = examData.questions;
+
+    // const questionsData = await this.prismaService.question.findMany({
+    //   where: {
+    //     exams: {
+    //       some: {
+    //         examId: examId,
+    //       },
+    //     },
+    //   },
+    // });
 
     if (questionsData.length === 0) {
       return res.status(400).json({
