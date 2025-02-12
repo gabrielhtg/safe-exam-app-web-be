@@ -365,6 +365,13 @@ export class ExamService {
         },
       });
 
+      console.log("data essay answer", data)
+      // if (data.length === 0) {
+      //   await this.prismaService.examResult.update({
+      //     where: { id: examResultId },
+      //     data: { graded: true },
+      //   });
+      // }
       return res.status(HttpStatus.OK).json({
         message: 'ok',
         data,
