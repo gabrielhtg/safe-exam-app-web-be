@@ -450,7 +450,7 @@ export class ExamService {
     const questionsData = await this.prismaService.question.findMany({
       where: {
         exams: {
-          every: {
+          some: {
             examId: examId,
           },
         },
