@@ -475,6 +475,7 @@ export class ExamService {
       examCreatorData,
       allowedUserData,
       questionsData,
+      session_id: uuidv4(),
     };
 
     const fileName = `${courseData.title}-${examData.title}.ta12`.replaceAll(
