@@ -197,6 +197,7 @@ export class ExamService {
       let tempScore = 0;
       let correctQuestion = {};
       const proctoringData = jsonData.proctoringLog;
+      const hasEssay = questionsData.some((q: any) => q.type === 'essay');
 
       const submitByUsername = await this.prismaService.examResult.findMany({
         where: {
@@ -287,6 +288,7 @@ export class ExamService {
             indicated_cheating:
               proctoringData.length >= jsonData.exam.cheating_limit,
             submit_id: submitId,
+            graded: hasEssay ? false : true,
           },
         });
       } catch (error) {
