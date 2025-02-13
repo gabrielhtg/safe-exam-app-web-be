@@ -8,43 +8,76 @@ export class QuestionService {
   constructor(private prismaService: PrismaService) {}
 
   async create(data: any, res: Response) {
-    const createQuestionData = await this.prismaService.question.create({
-      data: {
-        content: data.content,
-        type: data.type,
-        point: data.remarks,
-        created_by: data.created_by,
-        course_id: data.course,
-      },
-    });
+    console.log(data);
 
-    data.options.forEach((option: any, index: number) => {
-      option['id'] = `${createQuestionData.id}.${index}`;
-    });
+    if (data.question_id) {
+      try {
+        await this.prismaService.examQuestion.create({
+          data: {
+            examId: +data.exam_id,
+            questionId: data.question_id,
+          },
+        });
 
-    const createOptions = await this.prismaService.question.update({
-      where: {
-        id: createQuestionData.id,
-      },
-      data: {
-        options: data.options,
-      },
-    });
+        return res.status(200).json({
+          message: 'Question added successfully.',
+          data: null,
+        });
+      } catch (e: any) {
+        if (e.code === 'P2002') {
+          return res.status(400).json({
+            message:
+              'Failed to add question. Questions have been added previously to this exam.',
+            data: null,
+          });
+        } else {
+          return res.status(400).json({
+            message: 'Failed to add question. Unknown error',
+            data: null,
+          });
+        }
+      }
+    } else {
+      const createQuestionData = await this.prismaService.question.create({
+        data: {
+          content: data.content,
+          type: data.type,
+          point: data.remarks,
+          created_by: data.created_by,
+          course_id: data.course,
+        },
+      });
 
-    const questionRelationData = await this.prismaService.examQuestion.create({
-      data: {
-        examId: +data.exam_id,
-        questionId: createQuestionData.id,
-      },
-    });
+      data.options.forEach((option: any, index: number) => {
+        option['id'] = `${createQuestionData.id}.${index}`;
+      });
 
-    return res.status(200).json({
-      message: 'Question saved successfully.',
-      data: {
-        question_data: createOptions,
-        relation_data: questionRelationData,
-      },
-    });
+      const createOptions = await this.prismaService.question.update({
+        where: {
+          id: createQuestionData.id,
+        },
+        data: {
+          options: data.options,
+        },
+      });
+
+      const questionRelationData = await this.prismaService.examQuestion.create(
+        {
+          data: {
+            examId: +data.exam_id,
+            questionId: createQuestionData.id,
+          },
+        },
+      );
+
+      return res.status(200).json({
+        message: 'Question saved successfully.',
+        data: {
+          question_data: createOptions,
+          relation_data: questionRelationData,
+        },
+      });
+    }
   }
 
   async findAll(
