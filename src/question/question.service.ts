@@ -66,7 +66,7 @@ export class QuestionService {
         course_id: course_id ? course_id : undefined,
         exams: {
           some: {
-            examId: exam,
+            examId: exam ? exam : undefined,
           },
         },
       },
@@ -78,7 +78,7 @@ export class QuestionService {
         course: true,
         exams: {
           where: {
-            examId: exam,
+            examId: exam ? exam : undefined,
           },
           include: {
             exam: true,
