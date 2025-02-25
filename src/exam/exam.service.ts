@@ -288,7 +288,7 @@ export class ExamService {
             indicated_cheating:
               proctoringData.length >= jsonData.exam.cheating_limit,
             submit_id: submitId,
-            graded: hasEssay ? false : true,
+            graded: !hasEssay,
           },
         });
       } catch (error) {
@@ -480,10 +480,9 @@ export class ExamService {
       session_id: uuidv4(),
     };
 
-    const fileName = `${courseData.title}-${examData.title}.ta12`.replaceAll(
-      ' ',
-      '_',
-    );
+    const fileName = `${courseData.title}-${examData.title}.ta12`
+      .replaceAll(' ', '_')
+      .replaceAll('/', '_');
     const filePath = path.join(
       __dirname,
       '..',
