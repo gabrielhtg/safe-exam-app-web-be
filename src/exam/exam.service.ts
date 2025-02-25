@@ -170,10 +170,7 @@ export class ExamService {
       process.cwd(),
       'public',
       'exam_result_file_extracted',
-      resultFile.filename
-        .split('.')[0]
-        .replaceAll('/', '_')
-        .replaceAll('\\', '_'),
+      resultFile.filename.split('.')[0],
     );
 
     try {
