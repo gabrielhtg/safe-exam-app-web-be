@@ -201,6 +201,7 @@ export class ExamService {
 
       const submitByUsername = await this.prismaService.examResult.findMany({
         where: {
+          exam_id: examData.id,
           user_username: username,
         },
       });
