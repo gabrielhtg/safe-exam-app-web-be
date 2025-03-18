@@ -16,7 +16,7 @@ export class DownloadHonestestController {
     private readonly downloadHonestestService: DownloadHonestestService,
   ) {}
 
-  @Post()
+  @Post('windows')
   @UseInterceptors(FileInterceptor('windows_app', uploadAppWindows))
   saveWindows(
     @UploadedFile() file: Express.Multer.File,
@@ -25,7 +25,7 @@ export class DownloadHonestestController {
     return this.downloadHonestestService.saveWindows(file, response);
   }
 
-  @Post()
+  @Post('linux')
   @UseInterceptors(FileInterceptor('linux_app', uploadAppLinux))
   saveLinux(
     @UploadedFile() file: Express.Multer.File,
