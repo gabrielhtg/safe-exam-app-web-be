@@ -1,5 +1,4 @@
 import {
-  Body,
   Controller,
   Post,
   Res,
@@ -27,7 +26,7 @@ export class DownloadHonestestController {
   }
 
   @Post()
-  @UseInterceptors(FileInterceptor('windows_app', uploadAppLinux))
+  @UseInterceptors(FileInterceptor('linux_app', uploadAppLinux))
   saveLinux(
     @UploadedFile() file: Express.Multer.File,
     @Res() response: Response,
