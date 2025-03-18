@@ -30,6 +30,26 @@ export const uploadCoursePict = {
   },
 };
 
+export const uploadAppWindows = {
+  storage: diskStorage({
+    destination: join(__dirname, '..', 'public/application'),
+    filename: (req, file, callback) => {
+      const filename = `honestest-windows.exe`;
+      callback(null, filename);
+    },
+  }),
+};
+
+export const uploadAppLinux = {
+  storage: diskStorage({
+    destination: join(__dirname, '..', 'public/application'),
+    filename: (req, file, callback) => {
+      const filename = `honestest-linux.exe`;
+      callback(null, filename);
+    },
+  }),
+};
+
 export const uploadResultFile = {
   storage: diskStorage({
     destination: join(__dirname, '..', 'public/exam_result_file'),

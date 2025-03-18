@@ -11,6 +11,7 @@ import { QuestionModule } from './question/question.module';
 import { ExamResultModule } from './exam-result/exam-result.module';
 import { AllowedStudentModule } from './allowed-student/allowed-student.module';
 import { ExamConfigModule } from './exam-config/exam-config.module';
+import { DownloadHonestestModule } from './download-honestest/download-honestest.module';
 
 @Module({
   imports: [
@@ -25,6 +26,7 @@ import { ExamConfigModule } from './exam-config/exam-config.module';
     ExamResultModule,
     AllowedStudentModule,
     ExamConfigModule,
+    DownloadHonestestModule,
   ],
   controllers: [AppController],
   providers: [AppService],
