@@ -44,7 +44,7 @@ export const uploadAppLinux = {
   storage: diskStorage({
     destination: join(__dirname, '..', 'public/application'),
     filename: (req, file, callback) => {
-      const filename = `honestest-linux.exe`;
+      const filename = `honestest-linux.AppImage`;
       callback(null, filename);
     },
   }),
