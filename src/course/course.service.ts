@@ -93,7 +93,7 @@ export class CourseService {
       },
     });
 
-    if (tempCourse.length > 0) {
+    if (tempCourse.length > 1) {
       return res.status(400).json({
         message: `Course with title ${updateCourseDto.title} already exists`,
         data: null,

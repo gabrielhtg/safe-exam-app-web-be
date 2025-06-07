@@ -125,7 +125,7 @@ export class ExamService {
       },
     });
 
-    if (tempExam.length > 0) {
+    if (tempExam.length > 1) {
       return res.status(400).json({
         message: `Exam with title ${updateData.title} already exists`,
         data: null,
