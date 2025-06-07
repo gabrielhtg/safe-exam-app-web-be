@@ -86,6 +86,20 @@ export class CourseService {
   async update(updateCourseDto: any, res: Response, file: Express.Multer.File) {
     let updateData: any | null;
 
+    const tempCourse = await this.prismaService.course.findMany({
+      where: {
+        title: updateCourseDto.title,
+        created_by: updateCourseDto.username,
+      },
+    });
+
+    if (tempCourse.length > 0) {
+      return res.status(400).json({
+        message: `Course with title ${updateCourseDto.title} already exists`,
+        data: null,
+      });
+    }
+
     if (file !== undefined) {
       updateData = await this.prismaService.course.update({
         where: {

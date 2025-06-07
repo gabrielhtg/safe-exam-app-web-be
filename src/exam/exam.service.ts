@@ -19,6 +19,20 @@ export class ExamService {
   ) {}
 
   async create(createExamDto: any, res: Response) {
+    const tempExam = await this.prismaService.exam.findMany({
+      where: {
+        title: createExamDto.title,
+        created_by: createExamDto.created_by,
+      },
+    });
+
+    if (tempExam.length > 0) {
+      return res.status(400).json({
+        message: `Course with title ${createExamDto.title} already exists`,
+        data: null,
+      });
+    }
+
     const createData = await this.prismaService.exam.create({
       data: {
         title: createExamDto.title,
@@ -102,6 +116,20 @@ export class ExamService {
   }
 
   async update(id: number, updateData: any, res: Response) {
+    const tempExam = await this.prismaService.exam.findMany({
+      where: {
+        title: updateData.title,
+        created_by: updateData.created_by,
+      },
+    });
+
+    if (tempExam.length > 0) {
+      return res.status(400).json({
+        message: `Course with title ${updateData.title} already exists`,
+        data: null,
+      });
+    }
+
     {
       const temp = await this.prismaService.exam.update({
         where: {
