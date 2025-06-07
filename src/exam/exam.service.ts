@@ -22,7 +22,7 @@ export class ExamService {
     const min = 0;
     const max = 9999;
     const randomNumber = Math.floor(Math.random() * (max - min + 1)) + min;
-    return `C-${String(randomNumber).padStart(4, '0')}`;
+    return `C${String(randomNumber).padStart(4, '0')}`;
   };
 
   async create(createExamDto: any, res: Response) {
