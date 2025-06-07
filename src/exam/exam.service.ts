@@ -18,6 +18,13 @@ export class ExamService {
     private jsonService: JsonService,
   ) {}
 
+  generateRandomString = () => {
+    const min = 0;
+    const max = 9999;
+    const randomNumber = Math.floor(Math.random() * (max - min + 1)) + min;
+    return `C-${String(randomNumber).padStart(4, '0')}`;
+  };
+
   async create(createExamDto: any, res: Response) {
     const tempExam = await this.prismaService.exam.findMany({
       where: {
@@ -40,7 +47,7 @@ export class ExamService {
         start_password: createExamDto.start_password,
         start_date: createExamDto.start_date,
         end_date: createExamDto.end_date,
-        config_password: uuidv4(),
+        config_password: this.generateRandomString(),
         description: createExamDto.description,
         created_by: createExamDto.created_by,
         course_id: +createExamDto.course_id,
@@ -143,7 +150,9 @@ export class ExamService {
             ? updateData.start_password
             : '',
           end_password: updateData.end_password ? updateData.end_password : '',
-          config_password: updateData.config_password ? uuidv4() : undefined,
+          config_password: updateData.config_password
+            ? this.generateRandomString()
+            : undefined,
           start_date: updateData.start_date ? updateData.start_date : undefined,
           end_date: updateData.end_date ? updateData.end_date : undefined,
           sequential: updateData.sequential ? updateData.sequential : undefined,

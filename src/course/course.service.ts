@@ -7,6 +7,13 @@ import { v4 as uuidv4 } from 'uuid';
 export class CourseService {
   constructor(private prismaService: PrismaService) {}
 
+  generateRandomString = () => {
+    const min = 0;
+    const max = 9999;
+    const randomNumber = Math.floor(Math.random() * (max - min + 1)) + min;
+    return `E-${String(randomNumber).padStart(4, '0')}`;
+  };
+
   async create(createCourseDto: any, file: Express.Multer.File, res: Response) {
     const tempCourse = await this.prismaService.course.findMany({
       where: {
@@ -28,7 +35,7 @@ export class CourseService {
         description: createCourseDto.description,
         image: file ? `course_pict/${file.filename}` : null,
         created_by: createCourseDto.username,
-        enroll_key: uuidv4(),
+        enroll_key: this.generateRandomString(),
       },
     });
 
@@ -150,7 +157,7 @@ export class CourseService {
         id: courseId,
       },
       data: {
-        enroll_key: uuidv4(),
+        enroll_key: this.generateRandomString(),
       },
     });
 
