@@ -22,13 +22,14 @@ export class ExamService {
     const tempExam = await this.prismaService.exam.findMany({
       where: {
         title: createExamDto.title,
+        course_id: +createExamDto.course_id,
         created_by: createExamDto.created_by,
       },
     });
 
     if (tempExam.length > 0) {
       return res.status(400).json({
-        message: `Course with title ${createExamDto.title} already exists`,
+        message: `Exam with title ${createExamDto.title} already exists`,
         data: null,
       });
     }
@@ -119,13 +120,14 @@ export class ExamService {
     const tempExam = await this.prismaService.exam.findMany({
       where: {
         title: updateData.title,
+        course_id: +updateData.course_id,
         created_by: updateData.created_by,
       },
     });
 
     if (tempExam.length > 0) {
       return res.status(400).json({
-        message: `Course with title ${updateData.title} already exists`,
+        message: `Exam with title ${updateData.title} already exists`,
         data: null,
       });
     }
