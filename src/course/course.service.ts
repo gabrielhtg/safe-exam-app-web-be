@@ -8,6 +8,20 @@ export class CourseService {
   constructor(private prismaService: PrismaService) {}
 
   async create(createCourseDto: any, file: Express.Multer.File, res: Response) {
+    const tempCourse = await this.prismaService.course.findMany({
+      where: {
+        title: createCourseDto.title,
+        created_by: createCourseDto.username,
+      },
+    });
+
+    if (tempCourse.length > 0) {
+      return res.status(400).json({
+        message: `Course with title ${createCourseDto.title} already exists`,
+        data: null,
+      });
+    }
+
     const createResult = await this.prismaService.course.create({
       data: {
         title: createCourseDto.title,
