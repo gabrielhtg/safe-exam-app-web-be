@@ -15,16 +15,29 @@ export class CourseService {
   };
 
   async validateCourseTitle(reqData: any, res: Response) {
-    const response = await axios.post(process.env.OLLAMA_URL, {
-      model: 'gemma3:1b',
-      stream: false,
-      prompt: `Sekarang kamu akan mejadi validator input. Input ini adalah input title course. Kamu harus memastikan bahwa input yang dimasukkan adalah input yang valid sebagai sebuah title course. jadi ketika saya mengirimkan titlenya kepadamu. Lakukan validasi ya dengan true atau false aja. Berikut adalah nama coursenya ${reqData.course_title}.`,
-    });
+    try {
+      const response = await axios.post(
+        `${process.env.OLLAMA_URL}/api/generate`,
+        {
+          model: 'gemma3:latest',
+          stream: false,
+          // prompt: `Sekarang kamu akan mejadi validator input title course. Kamu harus memastikan bahwa input yang dimasukkan adalah input yang valid sebagai sebuah title course. Ketika saya mengirimkan titlenya kepadamu lakukan validasi dan cukup berikan response dengan 1 kata true atau false lowercase saja. Pastikan juga tidak ada tanda baca yang tidak perlu dan tidak nyambung pada title. Berikut adalah nama coursenya ${reqData.course_title}. Berikan responmu dalam true false`,
+          prompt: `Apakah course title "${reqData.course_title}" valid sebagai input course title?. Berikan responmu dalam true false lowercase 1 kata`,
+        },
+      );
 
-    return res.status(response.status).json({
-      message: 'success',
-      data: response.data.response,
-    });
+      return res.status(200).json({
+        message: 'success',
+        data: response.data.response,
+      });
+    } catch (e) {
+      console.log(e);
+
+      return res.status(400).json({
+        message: 'success',
+        data: null,
+      });
+    }
   }
 
   async create(createCourseDto: any, file: Express.Multer.File, res: Response) {
