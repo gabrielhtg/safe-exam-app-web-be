@@ -40,6 +40,15 @@ export class CourseController {
   }
 
   @UseGuards(AuthGuard)
+  @Post('generate-course-description')
+  async generateCourseDescription(
+    @Body() reqData: any,
+    @Res() response: Response,
+  ) {
+    return this.courseService.generateCourseDescription(reqData, response);
+  }
+
+  @UseGuards(AuthGuard)
   @Get()
   async findAll(
     @Query('sortBy') sortBy: string,

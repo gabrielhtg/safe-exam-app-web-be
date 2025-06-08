@@ -40,6 +40,31 @@ export class CourseService {
     }
   }
 
+  async generateCourseDescription(reqData: any, res: Response) {
+    try {
+      const response = await axios.post(
+        `${process.env.OLLAMA_URL}/api/generate`,
+        {
+          model: 'gemma3:latest',
+          stream: false,
+          prompt: `Buatkan saya deskripsi dari course ${reqData.course_title} dalam 2 sampai 3 kalimat dalam bahasa Inggris. Berikan 1 opsi saja tanpa kata-kata pengantar darimu dan tanpa kalimat lain selain deskripsinya.`,
+        },
+      );
+
+      return res.status(200).json({
+        message: 'success',
+        data: response.data.response,
+      });
+    } catch (e) {
+      console.log(e);
+
+      return res.status(400).json({
+        message: 'success',
+        data: null,
+      });
+    }
+  }
+
   async create(createCourseDto: any, file: Express.Multer.File, res: Response) {
     const tempCourse = await this.prismaService.course.findMany({
       where: {
