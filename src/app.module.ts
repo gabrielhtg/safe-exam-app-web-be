@@ -12,6 +12,7 @@ import { ExamResultModule } from './exam-result/exam-result.module';
 import { AllowedStudentModule } from './allowed-student/allowed-student.module';
 import { ExamConfigModule } from './exam-config/exam-config.module';
 import { DownloadHonestestModule } from './download-honestest/download-honestest.module';
+import { ConfigModule } from '@nestjs/config';
 
 @Module({
   imports: [
@@ -27,6 +28,7 @@ import { DownloadHonestestModule } from './download-honestest/download-honestest
     AllowedStudentModule,
     ExamConfigModule,
     DownloadHonestestModule,
+    ConfigModule.forRoot(),
   ],
   controllers: [AppController],
   providers: [AppService],

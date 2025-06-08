@@ -34,6 +34,12 @@ export class CourseController {
   }
 
   @UseGuards(AuthGuard)
+  @Post('validate-course-title')
+  async validateCourseTitle(@Body() reqData: any, @Res() response: Response) {
+    return this.courseService.validateCourseTitle(reqData, response);
+  }
+
+  @UseGuards(AuthGuard)
   @Get()
   async findAll(
     @Query('sortBy') sortBy: string,

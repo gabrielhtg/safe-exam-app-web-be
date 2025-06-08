@@ -148,8 +148,10 @@ export class ExamService {
           title: updateData.title ? updateData.title : undefined,
           start_password: updateData.start_password
             ? updateData.start_password
-            : '',
-          end_password: updateData.end_password ? updateData.end_password : '',
+            : undefined,
+          end_password: updateData.end_password
+            ? updateData.end_password
+            : undefined,
           config_password: updateData.config_password
             ? this.generateRandomString()
             : undefined,

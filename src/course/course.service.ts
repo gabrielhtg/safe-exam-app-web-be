@@ -1,7 +1,7 @@
 import { HttpStatus, Injectable } from '@nestjs/common';
 import { PrismaService } from '../prisma.service';
 import { Response } from 'express';
-import { v4 as uuidv4 } from 'uuid';
+import axios from 'axios';
 
 @Injectable()
 export class CourseService {
@@ -13,6 +13,19 @@ export class CourseService {
     const randomNumber = Math.floor(Math.random() * (max - min + 1)) + min;
     return `E${String(randomNumber).padStart(4, '0')}`;
   };
+
+  async validateCourseTitle(reqData: any, res: Response) {
+    const response = await axios.post(process.env.OLLAMA_URL, {
+      model: 'gemma3:1b',
+      stream: false,
+      prompt: `Sekarang kamu akan mejadi validator input. Input ini adalah input title course. Kamu harus memastikan bahwa input yang dimasukkan adalah input yang valid sebagai sebuah title course. jadi ketika saya mengirimkan titlenya kepadamu. Lakukan validasi ya dengan true atau false aja. Berikut adalah nama coursenya ${reqData.course_title}.`,
+    });
+
+    return res.status(response.status).json({
+      message: 'success',
+      data: response.data.response,
+    });
+  }
 
   async create(createCourseDto: any, file: Express.Multer.File, res: Response) {
     const tempCourse = await this.prismaService.course.findMany({
