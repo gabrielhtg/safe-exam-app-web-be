@@ -362,30 +362,30 @@ export class ExamService {
 
       // let prompt = `Buatkan summary dari tindakan kecurangan cheating pada ujian berikut, langsung saja pada summarynya tanpa kalimat berikut adalah summarynya. Jelaskan tindakan apa yang dilakukannya dan mengapa itu dicurigai kecurangan serta apa yang dibukanya pada gambar yang saya berikan kalau ada. Berikut adalah tindakan kecurangan yang dilakukannya : \n`;
       let prompt = `Buatkan summary dari tindakan kecurangan cheating pada ujian berikut, langsung saja pada summarynya. Jelaskan tindakan apa yang dilakukannya dan mengapa. Berikut adalah tindakan kecurangan yang dilakukannya : \n`;
-      const base64ImageArray = [];
+      // const base64ImageArray = [];
 
       for (let i = 0; i < proctoringData.length; i++) {
         prompt = prompt.concat(`${i + 1}. ${proctoringData[i].description}\n`);
 
-        try {
-          if (
-            proctoringData[i].description ===
-              'The examinee was detected changing window.' &&
-            createExamResultData.indicated_cheating
-          ) {
-            const fullImagePath = path.join(
-              process.cwd(),
-              'public',
-              'exam_result_file_extracted',
-              resultFile.filename.split('.')[0],
-              `s_${proctoringData[i].image_id}.png`,
-            );
-
-            base64ImageArray.push(this.encodeImageToBase64(fullImagePath));
-          }
-        } catch (e) {
-          // do nothing
-        }
+        // try {
+        //   if (
+        //     proctoringData[i].description ===
+        //       'The examinee was detected changing window.' &&
+        //     createExamResultData.indicated_cheating
+        //   ) {
+        //     const fullImagePath = path.join(
+        //       process.cwd(),
+        //       'public',
+        //       'exam_result_file_extracted',
+        //       resultFile.filename.split('.')[0],
+        //       `s_${proctoringData[i].image_id}.png`,
+        //     );
+        //
+        //     base64ImageArray.push(this.encodeImageToBase64(fullImagePath));
+        //   }
+        // } catch (e) {
+        //   // do nothing
+        // }
 
         await this.prismaService.proctoringLog.create({
           data: {
@@ -417,7 +417,7 @@ export class ExamService {
                 model: 'gemma3:latest',
                 stream: false,
                 prompt: prompt,
-                images: base64ImageArray,
+                // images: base64ImageArray,
               },
             );
 
