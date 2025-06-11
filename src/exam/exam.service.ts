@@ -200,6 +200,19 @@ export class ExamService {
     });
   }
 
+  encodeImageToBase64(imagePath: string): string {
+    try {
+      const imageBuffer = fs.readFileSync(imagePath);
+      return imageBuffer.toString('base64');
+    } catch (error) {
+      console.error(
+        `Gagal membaca atau meng-encode gambar: ${imagePath}`,
+        error,
+      );
+      throw error;
+    }
+  }
+
   async submit(req: any, resultFile: Express.Multer.File, res: Response) {
     const execPromise = util.promisify(exec);
     let sevenZipPath: string;
@@ -347,10 +360,30 @@ export class ExamService {
         // });
       }
 
-      let prompt = `Buatkan summary dari tindakan kecurangan cheating pada ujian berikut, langsung saja pada summarynya. Jelaskan tindakan apa yang sering dilakukannya dan mengapa itu dicurigai kecurangan. Berikut adalah tindakan kecurangan yang dilakukannya : \n`;
+      let prompt = `Buatkan summary dari tindakan kecurangan cheating pada ujian berikut, langsung saja pada summarynya. Jelaskan tindakan apa yang sering dilakukannya dan mengapa itu dicurigai kecurangan serta apa yang dibukanya pada gambar yang saya berikan kalau ada. Berikut adalah tindakan kecurangan yang dilakukannya : \n`;
+      const base64ImageArray = [];
 
       for (let i = 0; i < proctoringData.length; i++) {
         prompt = prompt.concat(`${i + 1}. ${proctoringData[i].description}\n`);
+
+        try {
+          if (
+            proctoringData[i].description ===
+            'The examinee was detected changing window.'
+          ) {
+            const fullImagePath = path.join(
+              process.cwd(),
+              'public',
+              'exam_result_file_extracted',
+              resultFile.filename.split('.')[0],
+              `s_${proctoringData[i].image_id}.png`,
+            );
+
+            base64ImageArray.push(this.encodeImageToBase64(fullImagePath));
+          }
+        } catch (e) {
+          // do nothing
+        }
 
         await this.prismaService.proctoringLog.create({
           data: {
@@ -382,6 +415,7 @@ export class ExamService {
                 model: 'gemma3:latest',
                 stream: false,
                 prompt: prompt,
+                images: base64ImageArray,
               },
             );
 
