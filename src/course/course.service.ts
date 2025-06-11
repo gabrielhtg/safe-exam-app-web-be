@@ -21,7 +21,6 @@ export class CourseService {
         {
           model: 'gemma3:latest',
           stream: false,
-          // prompt: `Sekarang kamu akan mejadi validator input title course. Kamu harus memastikan bahwa input yang dimasukkan adalah input yang valid sebagai sebuah title course. Ketika saya mengirimkan titlenya kepadamu lakukan validasi dan cukup berikan response dengan 1 kata true atau false lowercase saja. Pastikan juga tidak ada tanda baca yang tidak perlu dan tidak nyambung pada title. Berikut adalah nama coursenya ${reqData.course_title}. Berikan responmu dalam true false`,
           prompt: `Apakah course title "${reqData.course_title}" valid sebagai input course title?. Berikan responmu dalam true false lowercase 1 kata`,
         },
       );
@@ -31,10 +30,8 @@ export class CourseService {
         data: response.data.response,
       });
     } catch (e) {
-      console.log(e);
-
       return res.status(400).json({
-        message: 'success',
+        message: 'Gagal melakukan validasi course title!',
         data: null,
       });
     }

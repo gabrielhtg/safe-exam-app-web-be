@@ -10,6 +10,7 @@ import * as process from 'node:process';
 import { JsonService } from './json.service';
 import * as util from 'node:util';
 import * as os from 'node:os';
+import axios from 'axios';
 
 @Injectable()
 export class ExamService {
@@ -346,7 +347,11 @@ export class ExamService {
         // });
       }
 
+      let prompt = `Buatkan summary dari tindakan kecurangan cheating pada ujian berikut, langsung saja pada summarynya. Jelaskan tindakan apa yang sering dilakukannya dan mengapa itu dicurigai kecurangan. Berikut adalah tindakan kecurangan yang dilakukannya : \n`;
+
       for (let i = 0; i < proctoringData.length; i++) {
+        prompt = prompt.concat(`${i + 1}. ${proctoringData[i].description}\n`);
+
         await this.prismaService.proctoringLog.create({
           data: {
             description: proctoringData[i].description,
@@ -364,6 +369,38 @@ export class ExamService {
             exam_result_id: createExamResultData.id,
           },
         });
+      }
+
+      // ini nanti aktif ketika ada ditemukan cheating
+      // kemudian kita buat summarynya dengan ai
+      if (createExamResultData.indicated_cheating) {
+        (async () => {
+          try {
+            const response = await axios.post(
+              `${process.env.OLLAMA_URL}/api/generate`,
+              {
+                model: 'gemma3:latest',
+                stream: false,
+                prompt: prompt,
+              },
+            );
+
+            await this.prismaService.examResult.update({
+              where: {
+                id: createExamResultData.id,
+              },
+              data: {
+                cheating_summary: response.data.response,
+              },
+            });
+            console.log('Summarisasi kecurangan selesai di latar belakang.');
+          } catch (error) {
+            console.error(
+              'Gagal membuat atau menyimpan summary kecurangan:',
+              error,
+            );
+          }
+        })();
       }
 
       for (let i = 0; i < questionsData.length; i++) {

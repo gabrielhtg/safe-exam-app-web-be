@@ -108,6 +108,7 @@ model ExamResult {
   exam               Exam            @relation(fields: [exam_id], references: [id], onDelete: Cascade)
   exam_id            Int
   total_score        Decimal?        @default(0)
+  cheating_summary   String?
   expected_score     Decimal?        @default(0)
   attempt            Int             @default(0)
   created_at         DateTime        @default(now())

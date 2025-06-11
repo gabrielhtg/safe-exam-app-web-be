@@ -8,8 +8,6 @@ export class QuestionService {
   constructor(private prismaService: PrismaService) {}
 
   async create(data: any, res: Response) {
-    console.log(data);
-
     if (data.question_id) {
       try {
         await this.prismaService.examQuestion.create({
