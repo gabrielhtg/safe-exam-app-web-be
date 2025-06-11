@@ -360,7 +360,8 @@ export class ExamService {
         // });
       }
 
-      let prompt = `Buatkan summary dari tindakan kecurangan cheating pada ujian berikut, langsung saja pada summarynya tanpa kalimat berikut adalah summarynya. Jelaskan tindakan apa yang dilakukannya dan mengapa itu dicurigai kecurangan serta apa yang dibukanya pada gambar yang saya berikan kalau ada. Berikut adalah tindakan kecurangan yang dilakukannya : \n`;
+      // let prompt = `Buatkan summary dari tindakan kecurangan cheating pada ujian berikut, langsung saja pada summarynya tanpa kalimat berikut adalah summarynya. Jelaskan tindakan apa yang dilakukannya dan mengapa itu dicurigai kecurangan serta apa yang dibukanya pada gambar yang saya berikan kalau ada. Berikut adalah tindakan kecurangan yang dilakukannya : \n`;
+      let prompt = `Buatkan summary dari tindakan kecurangan cheating pada ujian berikut, langsung saja pada summarynya. Jelaskan tindakan apa yang dilakukannya dan mengapa. Berikut adalah tindakan kecurangan yang dilakukannya : \n`;
       const base64ImageArray = [];
 
       for (let i = 0; i < proctoringData.length; i++) {
