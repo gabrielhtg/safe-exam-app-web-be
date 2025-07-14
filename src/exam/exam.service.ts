@@ -408,36 +408,36 @@ export class ExamService {
 
       // ini nanti aktif ketika ada ditemukan cheating
       // kemudian kita buat summarynya dengan ai
-      if (createExamResultData.indicated_cheating) {
-        (async () => {
-          try {
-            const response = await axios.post(
-              `${process.env.OLLAMA_URL}/api/generate`,
-              {
-                model: 'gemma3:latest',
-                stream: false,
-                prompt: prompt,
-                // images: base64ImageArray,
-              },
-            );
-
-            await this.prismaService.examResult.update({
-              where: {
-                id: createExamResultData.id,
-              },
-              data: {
-                cheating_summary: response.data.response,
-              },
-            });
-            console.log('Summarisasi kecurangan selesai di latar belakang.');
-          } catch (error) {
-            console.error(
-              'Gagal membuat atau menyimpan summary kecurangan:',
-              error,
-            );
-          }
-        })();
-      }
+      // if (createExamResultData.indicated_cheating) {
+      //   (async () => {
+      //     try {
+      //       const response = await axios.post(
+      //         `${process.env.OLLAMA_URL}/api/generate`,
+      //         {
+      //           model: 'gemma3:latest',
+      //           stream: false,
+      //           prompt: prompt,
+      //           // images: base64ImageArray,
+      //         },
+      //       );
+      //
+      //       await this.prismaService.examResult.update({
+      //         where: {
+      //           id: createExamResultData.id,
+      //         },
+      //         data: {
+      //           cheating_summary: response.data.response,
+      //         },
+      //       });
+      //       console.log('Summarisasi kecurangan selesai di latar belakang.');
+      //     } catch (error) {
+      //       console.error(
+      //         'Gagal membuat atau menyimpan summary kecurangan:',
+      //         error,
+      //       );
+      //     }
+      //   })();
+      // }
 
       for (let i = 0; i < questionsData.length; i++) {
         await this.prismaService.examAnswer.create({
